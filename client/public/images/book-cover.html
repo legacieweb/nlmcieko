@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Cover</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #f0f0f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .book-cover-container {
+            width: 300px;
+            height: 400px;
+            position: relative;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: white;
+        }
+
+        .book-cover-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
+            pointer-events: none;
+        }
+
+        .book-logo {
+            font-size: 4rem;
+            text-align: center;
+            margin-bottom: 20px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .book-title {
+            font-size: 2rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            line-height: 1.2;
+        }
+
+        .book-subtitle {
+            font-size: 1rem;
+            text-align: center;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .book-features {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .book-features li {
+            padding: 10px 0;
+            text-align: center;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .book-features li:first-child {
+            border-top: none;
+        }
+
+        .cross-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+
+        .cross-icon::before,
+        .cross-icon::after {
+            content: '';
+            position: absolute;
+            background: white;
+            border-radius: 4px;
+        }
+
+        .cross-icon::before {
+            width: 6px;
+            height: 80px;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .cross-icon::after {
+            width: 80px;
+            height: 6px;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+        }
+
+        .book-footer {
+            text-align: center;
+            font-size: 0.8rem;
+            opacity: 0.8;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="book-cover-container">
+        <div>
+            <div class="cross-icon"></div>
+            <h1 class="book-title">GOD'S WORD</h1>
+            <p class="book-subtitle">Answers to Life's Deepest Questions</p>
+        </div>
+        <div>
+            <ul class="book-features">
+                <li>✓ Biblical Truth</li>
+                <li>✓ Verse-by-Verse</li>
+                <li>✓ Life-Changing</li>
+                <li>✓ 100% Free</li>
+            </ul>
+            <div class="book-footer">
+                Discover Your Spiritual Journey
+            </div>
+        </div>
+    </div>
+</body>
+</html>

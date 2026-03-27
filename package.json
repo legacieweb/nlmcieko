@@ -1,0 +1,18 @@
+{
+  "name": "grace-church-website",
+  "version": "1.0.0",
+  "description": "Grace Church - Christian website with sermons and biblical teachings",
+  "private": true,
+  "scripts": {
+    "install-all": "npm install && cd client && npm install && cd ../server && npm install",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm start",
+    "build": "cd client && npm install && npm run build && cd ../server && npm install",
+    "start": "NODE_ENV=production node server/server.js",
+    "seed": "cd server && npm run seed"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

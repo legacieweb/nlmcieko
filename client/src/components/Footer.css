@@ -1,0 +1,211 @@
+.main-footer {
+  position: relative;
+  color: #f1f5f9;
+  padding: 10rem 0 4rem;
+  background: linear-gradient(rgba(10, 15, 30, 0.9), rgba(10, 15, 30, 0.95)), url('https://i.imgur.com/veOEaC1.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 5rem;
+  margin-bottom: 8rem;
+}
+
+.footer-brand p {
+  color: #94a3b8;
+  margin: 2.5rem 0;
+  line-height: 1.8;
+  font-size: 1.1rem;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -1.5px;
+}
+
+.social-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.social-links a {
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  color: white;
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 0.85rem;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.social-links a:hover {
+  background: #6366f1;
+  color: #ffffff;
+  transform: translateY(-10px) rotate(8deg);
+  box-shadow: 0 15px 30px rgba(99, 102, 241, 0.3);
+  border-color: #6366f1;
+}
+
+.footer-links h3, .footer-newsletter h3 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 2.5rem;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.footer-links ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.footer-links a {
+  color: #94a3b8;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.footer-links a:hover {
+  color: #818cf8;
+  padding-left: 10px;
+}
+
+.footer-newsletter p {
+  color: #94a3b8;
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+  font-size: 1.1rem;
+}
+
+.newsletter-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.newsletter-form input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.2rem 1.8rem;
+  border-radius: 16px;
+  color: white;
+  font-family: inherit;
+  transition: all 0.3s ease;
+}
+
+.newsletter-form input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: #6366f1;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.newsletter-form button {
+  background: #6366f1;
+  color: #ffffff;
+  border: none;
+  padding: 1.2rem 2.5rem;
+  border-radius: 16px;
+  font-weight: 800;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.newsletter-form button:hover {
+  transform: translateY(-5px);
+  background: #4f46e5;
+  box-shadow: 0 15px 30px rgba(99, 102, 241, 0.3);
+}
+
+.footer-bottom {
+  padding-top: 5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #64748b;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.footer-legal {
+  display: flex;
+  gap: 3rem;
+}
+
+.footer-legal a {
+  color: #64748b;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-legal a:hover {
+  color: white;
+}
+
+@media (max-width: 1200px) {
+  .footer-grid {
+    gap: 3rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-footer {
+    padding: 8rem 0 4rem;
+  }
+  
+  .footer-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 5rem;
+  }
+
+  .footer-logo, .social-links {
+    justify-content: center;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+    gap: 2.5rem;
+  }
+
+  .footer-legal {
+    justify-content: center;
+    gap: 2rem;
+  }
+}

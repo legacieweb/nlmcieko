@@ -99,8 +99,8 @@ function HomePage() {
                 Prepare your soul for the afterlife through the unchanging Word of God.
               </p>
               <div className="hero-actions">
-                <a href="#belief-reflection" className="btn btn-primary">Start Reflection</a>
-                <a href="#salvation" className="btn btn-outline">How to be Saved</a>
+                <a href="/order" className="btn btn-primary">Order Book</a>
+                <a href="/assets/English01%5B2025%5D%20(1).pdf" download className="btn btn-outline">Download PDF</a>
               </div>
             </div>
             
@@ -108,18 +108,12 @@ function HomePage() {
               {book && (
                 <div className="book-card-mini">
                   <div className="book-visual-mini">
-                    <img src="/images/book-cover.svg" alt="The Path to Life Book" />
+                    <img src="https://bjnewlife.org/upload/book/HAVEYOUTRULYBEENBORNAGAINOFWATERANDTHESPIRIT2024L.jpg?ver=1709079147" alt="HAVE YOU TRULY BEEN BORN AGAIN OF WATER AND THE SPIRIT" />
                   </div>
                   <div className="book-details-mini">
                     <span className="book-badge">Free Resource</span>
-                    <h3>{book.title}</h3>
-                    <p>{book.description?.substring(0, 100)}...</p>
-                    <div className="mini-actions">
-                      <button onClick={handleDownload} className="btn-mini" disabled={loading}>
-                        {loading ? 'Sending...' : 'Get PDF'}
-                      </button>
-                      <a href="/order" className="btn-mini outline">Order Copy</a>
-                    </div>
+                    <h3>{book.title || "HAVE YOU TRULY BEEN BORN AGAIN OF WATER AND THE SPIRIT"}</h3>
+                    <p>{book.description?.substring(0, 100) || "Have you truly been born again of water and the Spirit? Explore the true meaning of being born again according to the Bible."}...</p>
                   </div>
                 </div>
               )}
@@ -253,14 +247,14 @@ function HomePage() {
               <div className="resource-card primary-card">
                 <div className="resource-visual">
                   <div className="book-3d-wrapper">
-                    <img src="/images/book-cover.svg" alt="The Path to Life Book" className="book-image" />
+                    <img src="https://bjnewlife.org/upload/book/HAVEYOUTRULYBEENBORNAGAINOFWATERANDTHESPIRIT2024L.jpg?ver=1709079147" alt="HAVE YOU TRULY BEEN BORN AGAIN OF WATER AND THE SPIRIT" className="book-image" />
                     <div className="book-spine"></div>
                   </div>
                 </div>
                 <div className="resource-info">
                   <span className="resource-tag">Featured Book</span>
-                  <h3>The Path to Life</h3>
-                  <p>A comprehensive guide to understanding salvation, your purpose, and the unchanging truth of the Bible.</p>
+                  <h3>HAVE YOU TRULY BEEN BORN AGAIN OF WATER AND THE SPIRIT</h3>
+                  <p>Explore the true meaning of being born again of water and the Spirit according to the Bible.</p>
                   <div className="resource-meta">
                     <span className="meta-item"><i className="fas fa-file-pdf"></i> PDF Format</span>
                     <span className="meta-item"><i className="fas fa-book-open"></i> 120+ Pages</span>

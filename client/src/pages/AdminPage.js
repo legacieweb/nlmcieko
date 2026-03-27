@@ -230,9 +230,76 @@ function AdminPage() {
     <div className="admin-page">
       <div className="admin-container">
         {!isAdmin ? (
-          <div className="access-denied">
-            <h1>Access Denied</h1>
-            <p>You do not have permission to access this page.</p>
+          <div className="access-denied-page">
+            <div className="access-denied-bg">
+              <div className="access-denied-gradient"></div>
+              <div className="access-denied-particles">
+                {[...Array(30)].map((_, i) => (
+                  <div key={i} className="denied-particle" style={{
+                    '--delay': `${Math.random() * 5}s`,
+                    '--duration': `${10 + Math.random() * 10}s`,
+                    '--size': `${5 + Math.random() * 20}px`,
+                    '--x': `${Math.random() * 100}%`,
+                    '--y': `${Math.random() * 100}%`,
+                  }}></div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="access-denied-content">
+              <div className="denied-icon-container">
+                <div className="denied-icon-ring"></div>
+                <div className="denied-icon">
+                  <i className="fas fa-lock"></i>
+                </div>
+              </div>
+              
+              <h1 className="denied-title">ACCESS DENIED</h1>
+              
+              <div className="denied-warning">
+                <i className="fas fa-exclamation-triangle"></i>
+                <span>UNAUTHORIZED ACCESS ATTEMPT DETECTED</span>
+              </div>
+              
+              <p className="denied-message">
+                You do not have permission to access this restricted area. 
+                This incident has been logged for security purposes.
+              </p>
+              
+              <div className="denied-details">
+                <div className="denied-detail-item">
+                  <i className="fas fa-shield-alt"></i>
+                  <span>Security Level: ADMIN ONLY</span>
+                </div>
+                <div className="denied-detail-item">
+                  <i className="fas fa-user-lock"></i>
+                  <span>Required Role: Administrator</span>
+                </div>
+                <div className="denied-detail-item">
+                  <i className="fas fa-clock"></i>
+                  <span>Attempt logged at: {new Date().toLocaleString()}</span>
+                </div>
+              </div>
+              
+              <div className="denied-actions">
+                <a href="/" className="denied-btn denied-btn-primary">
+                  <i className="fas fa-home"></i>
+                  <span>Return to Home</span>
+                </a>
+                <a href="/login" className="denied-btn denied-btn-secondary">
+                  <i className="fas fa-sign-in-alt"></i>
+                  <span>Login with Admin Account</span>
+                </a>
+              </div>
+              
+              <div className="denied-footer">
+                <p>If you believe this is an error, please contact the system administrator.</p>
+                <div className="denied-security-badge">
+                  <i className="fas fa-fingerprint"></i>
+                  <span>NLM Cieko Security System</span>
+                </div>
+              </div>
+            </div>
           </div>
         ) : (
           <>
@@ -494,32 +561,6 @@ function AdminPage() {
                               <td>{b.email}</td>
                               <td><strong>{b.percentage}%</strong></td>
                               <td>{new Date(b.created_at).toLocaleString()}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-
-                  {activeTab === 'contacts' && (
-                    <div className="table-view">
-                      <h1>Contact Inquiries</h1>
-                      <table>
-                        <thead>
-                          <tr>
-                            <th>Name</th>
-                            <th>Subject</th>
-                            <th>Message</th>
-                            <th>Date</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {contacts.map(c => (
-                            <tr key={c.id}>
-                              <td>{c.name}</td>
-                              <td>{c.subject}</td>
-                              <td>{c.message}</td>
-                              <td>{new Date(c.created_at).toLocaleDateString()}</td>
                             </tr>
                           ))}
                         </tbody>

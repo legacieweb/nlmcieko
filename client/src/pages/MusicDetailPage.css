@@ -339,6 +339,7 @@
 .lyrics-content-side::-webkit-scrollbar { display: none; }
 
 .lyrics-header { margin-bottom: 4rem; }
+.mobile-breadcrumb { display: none; }
 .lyrics-header h3 {
   font-size: 0.8rem;
   text-transform: uppercase;
@@ -539,6 +540,31 @@
   }
   
   .mobile-hero-player { display: flex; }
+  
+  .mobile-breadcrumb {
+    display: block;
+    margin-bottom: 2rem;
+  }
+
+  .mobile-back-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    color: #fff;
+    padding: 0.6rem 1.2rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .mobile-back-btn:active {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(0.95);
+  }
   
   .p-lyric-line { font-size: 1.8rem; text-align: center; }
   .p-lyric-line-wrapper { transform-origin: center center; opacity: 0.6; }

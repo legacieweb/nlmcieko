@@ -393,6 +393,13 @@ function MusicDetailPage() {
 
         {/* Lyrics Section (Right on Desktop, Main Scrollable on Mobile) */}
         <div className="lyrics-content-side">
+          {/* Mobile Back Button (Breadcrumb) */}
+          <div className="mobile-breadcrumb">
+            <button onClick={() => navigate('/music')} className="mobile-back-btn">
+              <i className="fas fa-chevron-left"></i> Back to Music
+            </button>
+          </div>
+          
           {/* Expanded Mobile Player Header */}
           <div className="mobile-hero-player">
             <div className="mobile-hero-art">

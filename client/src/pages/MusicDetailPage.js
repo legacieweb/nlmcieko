@@ -29,7 +29,7 @@ function MusicDetailPage() {
   const analyserRef = useRef(null);
   const sourceRef = useRef(null);
 
-  const BASE_URL = 'http://localhost:5000';
+  const BASE_URL = 'https://nlmcieko.onrender.com';
 
   const parseLyrics = useCallback((rawLyrics) => {
     if (!rawLyrics) return [];

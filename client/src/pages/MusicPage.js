@@ -39,7 +39,7 @@ function MusicPage() {
   useEffect(() => {
     const fetchSongs = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/admin/songs');
+        const response = await axios.get('https://nlmcieko.onrender.com/api/admin/songs');
         const fetchedSongs = response.data;
         setAllSongs(fetchedSongs);
         setPageLoading(false);
@@ -108,7 +108,7 @@ function MusicPage() {
   const handlePlaySong = useCallback(async (song) => {
     let audioUrl = song.audio_url;
     if (audioUrl && !audioUrl.startsWith('http')) {
-      audioUrl = `http://localhost:5000${audioUrl}`;
+      audioUrl = `https://nlmcieko.onrender.com${audioUrl}`;
     }
     
     if (playingSong?.id === song.id) {
@@ -188,7 +188,7 @@ function MusicPage() {
     e.stopPropagation();
     let audioUrl = song.audio_url;
     if (audioUrl && !audioUrl.startsWith('http')) {
-      audioUrl = `http://localhost:5000${audioUrl}`;
+      audioUrl = `https://nlmcieko.onrender.com${audioUrl}`;
     }
     try {
       const response = await fetch(audioUrl);

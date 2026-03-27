@@ -7,7 +7,7 @@ function OrderPage() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [counties, setCounties] = useState([]);
-  const BASE_URL = 'http://localhost:5000';
+  const BASE_URL = 'https://nlmcieko.onrender.com';
   const [formData, setFormData] = useState({
     fullName: '',
     phone: '',

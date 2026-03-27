@@ -30,7 +30,7 @@ function ContactPage() {
     setSubmitError('');
 
     try {
-      await axios.post('/api/contact/submit', formData);
+      await axios.post('https://nlmcieko.onrender.com/api/contact/submit', formData);
       setSubmitMessage('Thank you for your message! We will get back to you soon.');
       setFormData({
         name: '',

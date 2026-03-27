@@ -17,7 +17,7 @@ function HomePage() {
 
   const fetchBook = useCallback(async () => {
     try {
-      const response = await axios.get('/api/book');
+      const response = await axios.get('https://nlmcieko.onrender.com/api/book');
       setBook(response.data);
     } catch (error) {
       console.error('Error fetching book:', error);
@@ -42,7 +42,7 @@ function HomePage() {
     }
     
     try {
-      await axios.post('/api/belief', { 
+      await axios.post('https://nlmcieko.onrender.com/api/belief', { 
         percentage: beliefPercentage, 
         email: user?.email || email || 'anonymous' 
       });
@@ -65,7 +65,7 @@ function HomePage() {
 
     setLoading(true);
     try {
-      await axios.post('/api/book/download', { email: user?.email || email });
+      await axios.post('https://nlmcieko.onrender.com/api/book/download', { email: user?.email || email });
       setMessage('Your free book has been sent to your email!');
       setMessageType('success');
       setEmail('');

@@ -231,56 +231,78 @@ function AdminPage() {
       <div className="admin-container">
         {!isAdmin ? (
           <div className="access-denied-page">
+            {/* Animated Background */}
             <div className="access-denied-bg">
               <div className="access-denied-gradient"></div>
-              <div className="access-denied-particles">
-                {[...Array(30)].map((_, i) => (
-                  <div key={i} className="denied-particle" style={{
-                    '--delay': `${Math.random() * 5}s`,
-                    '--duration': `${10 + Math.random() * 10}s`,
-                    '--size': `${5 + Math.random() * 20}px`,
-                    '--x': `${Math.random() * 100}%`,
-                    '--y': `${Math.random() * 100}%`,
-                  }}></div>
-                ))}
-              </div>
+              <div className="gradient-sphere"></div>
+              <div className="gradient-sphere secondary"></div>
             </div>
             
+            {/* Main Content */}
             <div className="access-denied-content">
+              {/* Lock Icon */}
               <div className="denied-icon-container">
-                <div className="denied-icon-ring"></div>
                 <div className="denied-icon">
                   <i className="fas fa-lock"></i>
                 </div>
               </div>
               
+              {/* Title */}
               <h1 className="denied-title">ACCESS DENIED</h1>
               
+              {/* Warning Badge */}
               <div className="denied-warning">
                 <i className="fas fa-exclamation-triangle"></i>
                 <span>UNAUTHORIZED ACCESS ATTEMPT DETECTED</span>
               </div>
               
+              {/* Message */}
               <p className="denied-message">
                 You do not have permission to access this restricted area. 
                 This incident has been logged for security purposes.
               </p>
               
+              {/* Security Details */}
               <div className="denied-details">
                 <div className="denied-detail-item">
-                  <i className="fas fa-shield-alt"></i>
-                  <span>Security Level: ADMIN ONLY</span>
+                  <div className="detail-icon-wrapper">
+                    <i className="fas fa-shield-alt"></i>
+                  </div>
+                  <div className="detail-content">
+                    <span className="detail-label">Security Level</span>
+                    <span className="detail-value">ADMIN ONLY</span>
+                  </div>
                 </div>
                 <div className="denied-detail-item">
-                  <i className="fas fa-user-lock"></i>
-                  <span>Required Role: Administrator</span>
+                  <div className="detail-icon-wrapper">
+                    <i className="fas fa-user-lock"></i>
+                  </div>
+                  <div className="detail-content">
+                    <span className="detail-label">Required Role</span>
+                    <span className="detail-value">Administrator</span>
+                  </div>
                 </div>
                 <div className="denied-detail-item">
-                  <i className="fas fa-clock"></i>
-                  <span>Attempt logged at: {new Date().toLocaleString()}</span>
+                  <div className="detail-icon-wrapper">
+                    <i className="fas fa-clock"></i>
+                  </div>
+                  <div className="detail-content">
+                    <span className="detail-label">Attempt Logged</span>
+                    <span className="detail-value">{new Date().toLocaleString()}</span>
+                  </div>
+                </div>
+                <div className="denied-detail-item">
+                  <div className="detail-icon-wrapper">
+                    <i className="fas fa-network-wired"></i>
+                  </div>
+                  <div className="detail-content">
+                    <span className="detail-label">IP Address</span>
+                    <span className="detail-value">Logged</span>
+                  </div>
                 </div>
               </div>
               
+              {/* Action Buttons */}
               <div className="denied-actions">
                 <a href="/" className="denied-btn denied-btn-primary">
                   <i className="fas fa-home"></i>
@@ -292,11 +314,17 @@ function AdminPage() {
                 </a>
               </div>
               
+              {/* Footer */}
               <div className="denied-footer">
                 <p>If you believe this is an error, please contact the system administrator.</p>
                 <div className="denied-security-badge">
-                  <i className="fas fa-fingerprint"></i>
-                  <span>NLM Cieko Security System</span>
+                  <div className="badge-icon">
+                    <i className="fas fa-fingerprint"></i>
+                  </div>
+                  <div className="badge-content">
+                    <span className="badge-title">NLM Cieko Security System</span>
+                    <span className="badge-subtitle">Protected by Advanced Security</span>
+                  </div>
                 </div>
               </div>
             </div>

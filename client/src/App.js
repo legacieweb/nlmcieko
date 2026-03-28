@@ -18,6 +18,7 @@ import GalleryPage from './pages/GalleryPage';
 import AdminPage from './pages/AdminPage';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
+import NotFoundPage from './pages/NotFoundPage';
 import './styles/App.css';
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
         <Footer />

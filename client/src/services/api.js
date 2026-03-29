@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const SERVER_URL = process.env.REACT_APP_SERVER_URL || 'http://localhost:5000';
+export const SERVER_URL = process.env.REACT_APP_SERVER_URL || 'https://nlmcieko.onrender.com';
 const API_BASE_URL = `${SERVER_URL}/api`;
 
 const api = axios.create({

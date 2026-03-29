@@ -31,6 +31,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
 
+// Serve static files from React build
+app.use(express.static(path.join(__dirname, '../client/build')));
+
 app.use('/api/contact', contactRoutes);
 app.use('/api/book', bookRoutes);
 app.use('/api/auth', authRoutes);
@@ -52,6 +55,11 @@ app.post('/api/belief', async (req, res) => {
 // Health Check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'Server is running' });
+});
+
+// Catch-all route for SPA
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
 });
 
 app.listen(PORT, () => {

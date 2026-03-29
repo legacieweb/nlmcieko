@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://gracechurch.example.com/sitemap.xml
+Sitemap: https://nlmcieko.iyonicorp.com/sitemap.xml

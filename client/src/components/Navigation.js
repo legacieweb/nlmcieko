@@ -28,6 +28,7 @@ function Navigation() {
       <div className="container">
         <div className="nav-content">
           <Link to="/" className="logo">
+            <img src="https://i.imgur.com/veOEaC1.png" alt="NLM Cieko Logo" className="logo-img" />
             <span className="logo-text">nlm cieko</span>
             <span className="logo-dot">.</span>
           </Link>

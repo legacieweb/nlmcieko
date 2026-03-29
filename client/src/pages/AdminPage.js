@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import './AdminPage.css';
 
 function AdminPage() {
@@ -42,7 +42,7 @@ function AdminPage() {
   // Fetch songs
   const fetchSongs = useCallback(async () => {
     try {
-      const res = await axios.get('https://nlmcieko.onrender.com/api/admin/songs');
+      const res = await api.get('/admin/songs');
       setSongs(res.data);
     } catch (err) {
       console.error('Error fetching songs:', err);
@@ -57,21 +57,18 @@ function AdminPage() {
 
   const fetchData = useCallback(async () => {
     setLoading(true);
-    const token = localStorage.getItem('token');
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-
     try {
       if (activeTab === 'analytics') {
-        const res = await axios.get('https://nlmcieko.onrender.com/api/admin/analytics', config);
+        const res = await api.get('/admin/analytics');
         setAnalytics(res.data);
       } else if (activeTab === 'orders') {
-        const res = await axios.get('https://nlmcieko.onrender.com/api/admin/orders', config);
+        const res = await api.get('/admin/orders');
         setOrders(res.data);
       } else if (activeTab === 'beliefs') {
-        const res = await axios.get('https://nlmcieko.onrender.com/api/admin/beliefs', config);
+        const res = await api.get('/admin/beliefs');
         setBeliefs(res.data);
       } else if (activeTab === 'contacts') {
-        const res = await axios.get('https://nlmcieko.onrender.com/api/admin/contacts', config);
+        const res = await api.get('/admin/contacts');
         setContacts(res.data);
       }
     } catch (err) {
@@ -89,7 +86,6 @@ function AdminPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    const token = localStorage.getItem('token');
     
     try {
       // Create FormData for file upload
@@ -104,14 +100,9 @@ function AdminPage() {
         data.append('audioFile', selectedFile);
       }
       
-      const config = { 
-        headers: { 
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
-        } 
-      };
-      
-      await axios.post('https://nlmcieko.onrender.com/api/admin/songs', data, config);
+      await api.post('/admin/songs', data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
       setStatusMessage({ type: 'success', text: 'Song added successfully!' });
       setTimeout(() => setStatusMessage(null), 3000);
       setFormData({ title: '', artist: 'NLM Cieko', genre: 'gospel', audioUrl: '', thumbnailUrl: '', lyrics: '' });
@@ -126,12 +117,9 @@ function AdminPage() {
     }
   };
 
-  // Handle delete song
   const handleDelete = async (songId) => {
     try {
-      const token = localStorage.getItem('token');
-      const config = { headers: { Authorization: `Bearer ${token}` } };
-      await axios.delete(`https://nlmcieko.onrender.com/api/admin/songs/${songId}`, config);
+      await api.delete(`/admin/songs/${songId}`);
       fetchSongs();
       setStatusMessage({ type: 'success', text: 'Song deleted!' });
       setDeletingId(null);
@@ -157,20 +145,14 @@ function AdminPage() {
     setShowAddForm(true);
   };
 
-  // Handle update song
   const handleUpdate = async (e) => {
     e.preventDefault();
     if (!selectedSong) return;
     setSaving(true);
-    const token = localStorage.getItem('token');
     
     try {
       let data;
-      const config = { 
-        headers: { 
-          Authorization: `Bearer ${token}`
-        } 
-      };
+      const options = {};
 
       if (selectedFile) {
         // Use FormData if there is a new file to upload
@@ -182,7 +164,7 @@ function AdminPage() {
         data.append('audioUrl', formData.audioUrl);
         data.append('thumbnailUrl', formData.thumbnailUrl);
         data.append('audioFile', selectedFile);
-        config.headers['Content-Type'] = 'multipart/form-data';
+        options.headers = { 'Content-Type': 'multipart/form-data' };
       } else {
         // Use regular JSON if only metadata is being updated
         data = {
@@ -195,7 +177,7 @@ function AdminPage() {
         };
       }
       
-      await axios.put(`https://nlmcieko.onrender.com/api/admin/songs/${selectedSong.id}`, data, config);
+      await api.put(`/admin/songs/${selectedSong.id}`, data, options);
       setStatusMessage({ type: 'success', text: 'Song updated successfully!' });
       setTimeout(() => setStatusMessage(null), 3000);
       setFormData({ title: '', artist: 'NLM Cieko', genre: 'gospel', audioUrl: '', thumbnailUrl: '', lyrics: '' });

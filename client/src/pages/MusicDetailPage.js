@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import axios from 'axios';
+import api, { SERVER_URL } from '../services/api';
 import MusicPreloader from '../components/MusicPreloader';
 import './MusicDetailPage.css';
 
@@ -28,8 +28,6 @@ function MusicDetailPage() {
   const audioContextRef = useRef(null);
   const analyserRef = useRef(null);
   const sourceRef = useRef(null);
-
-  const BASE_URL = 'https://nlmcieko.onrender.com';
 
   const parseLyrics = useCallback((rawLyrics) => {
     if (!rawLyrics) return [];
@@ -58,7 +56,7 @@ function MusicDetailPage() {
   useEffect(() => {
     const fetchSongData = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/admin/songs/${id}`);
+        const response = await api.get(`/admin/songs/${id}`);
         const currentSong = response.data;
         
         if (currentSong) {
@@ -91,13 +89,13 @@ function MusicDetailPage() {
     if (song && audioRef.current) {
       let audioUrl = song.audio_url;
       if (audioUrl && !audioUrl.startsWith('http')) {
-        audioUrl = `${BASE_URL}${audioUrl}`;
+        audioUrl = `${SERVER_URL}${audioUrl}`;
       }
       audioRef.current.src = audioUrl;
       audioRef.current.load();
       setIsPlaying(false);
     }
-  }, [song, BASE_URL]);
+  }, [song, SERVER_URL]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -224,7 +222,7 @@ function MusicDetailPage() {
     e?.stopPropagation();
     let audioUrl = song.audio_url;
     if (audioUrl && !audioUrl.startsWith('http')) {
-      audioUrl = `${BASE_URL}${audioUrl}`;
+      audioUrl = `${SERVER_URL}${audioUrl}`;
     }
     try {
       const response = await fetch(audioUrl);

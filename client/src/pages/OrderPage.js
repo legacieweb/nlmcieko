@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
 import './OrderPage.css';
 
 function OrderPage() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [counties, setCounties] = useState([]);
-  const BASE_URL = 'https://nlmcieko.onrender.com';
   const [formData, setFormData] = useState({
     fullName: '',
     phone: '',
@@ -48,7 +47,7 @@ function OrderPage() {
 
   const fetchCounties = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/orders/counties`);
+      const response = await api.get('/orders/counties');
       setCounties(response.data.counties);
     } catch (error) {
       console.error('Error fetching counties:', error);
@@ -82,12 +81,7 @@ function OrderPage() {
 
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(`${BASE_URL}/api/orders`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.post('/orders', formData);
 
       setOrderSuccess(true);
       setMessage('Order placed successfully! Check your email for confirmation.');

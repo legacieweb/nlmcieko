@@ -1,27 +1,38 @@
 services:
+  # Backend API Service
   - type: web
-    name: grace-church-website
+    name: grace-church-api
     env: node
     plan: free
-    buildCommand: npm run build
+    region: oregon
+    rootDir: server
+    buildCommand: npm install
     startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 10000
-      - key: DATABASE_URL
-        fromDatabase:
-          name: grace-church-db
-          property: connectionString
+      - key: NEON_DATABASE_URL
+        sync: false
       - key: JWT_SECRET
         generateValue: true
       - key: EMAIL_USER
         sync: false
-      - key: EMAIL_PASS
+      - key: EMAIL_PASSWORD
         sync: false
+      - key: FRONTEND_URL
+        value: https://grace-church-website.onrender.com # Update this after frontend is deployed
 
-databases:
-  - name: grace-church-db
+  # Frontend Static Website
+  - type: static
+    name: grace-church-website
+    env: static
     plan: free
     region: oregon
+    rootDir: client
+    buildCommand: npm install && npm run build
+    publishDir: build
+    envVars:
+      - key: REACT_APP_SERVER_URL
+        value: https://grace-church-api.onrender.com # Update this with your backend URL

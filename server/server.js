@@ -20,7 +20,10 @@ const __dirname = path.dirname(__filename);
 
 initPostgres();
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -46,19 +49,10 @@ app.post('/api/belief', async (req, res) => {
 });
 
 
+// Health Check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'Server is running' });
 });
-
-// Serve client build in production
-if (process.env.NODE_ENV === 'production') {
-  const clientBuildPath = path.join(__dirname, '../client/build');
-  app.use(express.static(clientBuildPath));
-  
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(clientBuildPath, 'index.html'));
-  });
-}
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

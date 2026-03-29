@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
 import './OrderHistoryPage.css';
 
 function OrderHistoryPage() {
@@ -20,16 +20,12 @@ function OrderHistoryPage() {
 
     const user = JSON.parse(userData);
     setUser(user);
-    fetchOrders(token);
+    fetchOrders();
   }, [navigate]);
 
-  const fetchOrders = async (token) => {
+  const fetchOrders = async () => {
     try {
-      const response = await axios.get('/api/orders', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.get('/orders');
       setOrders(response.data);
     } catch (error) {
       console.error('Error fetching orders:', error);

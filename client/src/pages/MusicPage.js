@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import axios from 'axios';
+import api, { SERVER_URL } from '../services/api';
 import MusicPreloader from '../components/MusicPreloader';
 import './MusicPage.css';
 
@@ -39,7 +39,7 @@ function MusicPage() {
   useEffect(() => {
     const fetchSongs = async () => {
       try {
-        const response = await axios.get('https://nlmcieko.onrender.com/api/admin/songs');
+        const response = await api.get('/admin/songs');
         const fetchedSongs = response.data;
         setAllSongs(fetchedSongs);
         setPageLoading(false);
@@ -108,7 +108,7 @@ function MusicPage() {
   const handlePlaySong = useCallback(async (song) => {
     let audioUrl = song.audio_url;
     if (audioUrl && !audioUrl.startsWith('http')) {
-      audioUrl = `https://nlmcieko.onrender.com${audioUrl}`;
+      audioUrl = SERVER_URL+audioUrl;
     }
     
     if (playingSong?.id === song.id) {
@@ -188,7 +188,7 @@ function MusicPage() {
     e.stopPropagation();
     let audioUrl = song.audio_url;
     if (audioUrl && !audioUrl.startsWith('http')) {
-      audioUrl = `https://nlmcieko.onrender.com${audioUrl}`;
+      audioUrl = SERVER_URL+audioUrl;
     }
     try {
       const response = await fetch(audioUrl);

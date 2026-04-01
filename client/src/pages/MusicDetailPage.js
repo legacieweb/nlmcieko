@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { useMusic } from '../context/MusicContext';
 import api, { SERVER_URL } from '../services/api';
 import MusicPreloader from '../components/MusicPreloader';
 import './MusicDetailPage.css';
@@ -8,20 +9,35 @@ import './MusicDetailPage.css';
 function MusicDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const {
+    playingSong,
+    isPlaying,
+    playSong,
+    togglePlay,
+    currentTime,
+    duration,
+    progress,
+    volume,
+    setVolume,
+    audioRef,
+    toast,
+    nextSongPopup,
+    cancelNextSong
+  } = useMusic();
+
   const [song, setSong] = useState(null);
   const [pageLoading, setPageLoading] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [progress, setProgress] = useState(0);
+  
+  useEffect(() => {
+    if (nextSongPopup.visible && nextSongPopup.countdown === 0 && nextSongPopup.song) {
+      navigate(`/music/${nextSongPopup.song.id}`);
+    }
+  }, [nextSongPopup.visible, nextSongPopup.countdown, nextSongPopup.song, navigate]);
+
   const [lyrics, setLyrics] = useState([]);
-  const [activeLyricIndex, setActiveLyricIndex] = useState(-1);
-  const [volume, setVolume] = useState(0.8);
   const [isMinimized, setIsMinimized] = useState(false);
   const scrollRef = useRef(null);
   
-  const activeLyricRef = useRef(null);
-  const audioRef = useRef(null);
   const visualizerRef = useRef(null);
   const mobileVisualizerRef = useRef(null);
   const animationRef = useRef(null);
@@ -47,22 +63,28 @@ function MusicDetailPage() {
       }).filter(l => l.text);
     } else {
       return lines.map((text, i) => ({
-        time: (i / lines.length) * (audioRef.current?.duration || 180),
+        time: (i / lines.length) * (duration || 180),
         text: text.trim()
       })).filter(l => l.text);
     }
-  }, []);
+  }, [duration]);
 
   useEffect(() => {
     const fetchSongData = async () => {
       try {
-        const response = await api.get(`/admin/songs/${id}`);
-        const currentSong = response.data;
+        const res = await api.get(`/admin/songs/${id}`);
+        const currentSong = res.data;
         
         if (currentSong) {
           setSong(currentSong);
           if (currentSong.lyrics) {
             setLyrics(parseLyrics(currentSong.lyrics));
+          }
+          if (!playingSong || playingSong.id !== currentSong.id) {
+            playSong(currentSong);
+          } else {
+            // Already playing or set as playingSong, just make sure local state matches if needed
+            setSong(currentSong);
           }
         } else {
           navigate('/music');
@@ -78,24 +100,8 @@ function MusicDetailPage() {
 
     return () => {
       if (animationRef.current) cancelAnimationFrame(animationRef.current);
-      if (audioContextRef.current) {
-        audioContextRef.current.close();
-        audioContextRef.current = null;
-      }
     };
-  }, [id, navigate]);
-
-  useEffect(() => {
-    if (song && audioRef.current) {
-      let audioUrl = song.audio_url;
-      if (audioUrl && !audioUrl.startsWith('http')) {
-        audioUrl = `${SERVER_URL}${audioUrl}`;
-      }
-      audioRef.current.src = audioUrl;
-      audioRef.current.load();
-      setIsPlaying(false);
-    }
-  }, [song, SERVER_URL]);
+  }, [id, navigate, parseLyrics, playSong, playingSong]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -125,7 +131,12 @@ function MusicDetailPage() {
       if (!audioContextRef.current) {
         audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
         analyserRef.current = audioContextRef.current.createAnalyser();
-        sourceRef.current = audioContextRef.current.createMediaElementSource(audioRef.current);
+        
+        if (!window.audioSource) {
+          window.audioSource = audioContextRef.current.createMediaElementSource(audioRef.current);
+        }
+        sourceRef.current = window.audioSource;
+        
         sourceRef.current.connect(analyserRef.current);
         analyserRef.current.connect(audioContextRef.current.destination);
       }
@@ -146,7 +157,6 @@ function MusicDetailPage() {
           const centerY = canvas.height / 2;
           const radius = (Math.min(canvas.width, canvas.height) / 2) - 40;
           
-          // Draw glow rings
           for (let i = 0; i < bufferLength; i += 4) {
             const barHeight = (dataArray[i] / 255) * 50;
             const angle = (i / bufferLength) * Math.PI * 2;
@@ -170,45 +180,16 @@ function MusicDetailPage() {
     } catch (e) {
       console.warn("Visualizer init failed:", e);
     }
-  }, []);
+  }, [audioRef]);
 
   useEffect(() => {
     if (isPlaying && song) initVisualizer();
   }, [isPlaying, song, initVisualizer]);
 
-  const handleTimeUpdate = () => {
-    if (audioRef.current) {
-      const current = audioRef.current.currentTime;
-      setCurrentTime(current);
-      setProgress((current / audioRef.current.duration) * 100);
-      if (lyrics.length > 0) {
-        const index = lyrics.findIndex((l, i) => {
-          const next = lyrics[i + 1];
-          return current >= l.time && (!next || current < next.time);
-        });
-        if (index !== -1 && index !== activeLyricIndex) setActiveLyricIndex(index);
-      }
-    }
-  };
-
-  const updateDuration = () => {
-    if (audioRef.current) setDuration(audioRef.current.duration || 0);
-  };
-
-  const togglePlay = () => {
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      if (audioContextRef.current && audioContextRef.current.state === 'suspended') audioContextRef.current.resume();
-      audioRef.current.play().catch(err => console.error("Playback failed:", err));
-    }
-    setIsPlaying(!isPlaying);
-  };
-
   const handleSeek = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const percent = (e.clientX - rect.left) / rect.width;
-    if (duration) audioRef.current.currentTime = percent * duration;
+    if (duration && audioRef.current) audioRef.current.currentTime = percent * duration;
   };
 
   const formatTime = (seconds) => {
@@ -239,7 +220,7 @@ function MusicDetailPage() {
 
   const handleShare = (e, song) => {
     e?.stopPropagation();
-    const shareUrl = `${window.location.origin}/music/${song.id}`;
+    const shareUrl = `${window.location.origin}/#/music/${song.id}`;
     navigator.clipboard.writeText(shareUrl);
     alert('Link copied!');
   };
@@ -259,14 +240,11 @@ function MusicDetailPage() {
       <div className="vignette-overlay"></div>
       <div className="noise-overlay"></div>
 
-      <audio 
-        ref={audioRef} 
-        onTimeUpdate={handleTimeUpdate} 
-        onLoadedMetadata={updateDuration}
-        onCanPlay={() => setPageLoading(false)}
-        onCanPlayThrough={() => setPageLoading(false)}
-        onEnded={() => setIsPlaying(false)}
-      />
+      {toast && (
+        <div className="music-toast">
+          {toast}
+        </div>
+      )}
 
       <div className="full-screen-layout" ref={scrollRef}>
         {/* Left Side: Player */}
@@ -319,7 +297,7 @@ function MusicDetailPage() {
               </div>
 
               <div className="perfect-playback">
-                <button className="ctrl-btn secondary" onClick={() => audioRef.current.currentTime -= 10}>
+                <button className="ctrl-btn secondary" onClick={() => { if (audioRef.current) audioRef.current.currentTime -= 10; }}>
                   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.5 16L7 12l5.5-4v8zm-5.5 0L1.5 12l5.5-4v8z"/></svg>
                 </button>
                 <button className="ctrl-btn primary-play" onClick={togglePlay}>
@@ -328,7 +306,7 @@ function MusicDetailPage() {
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                   }
                 </button>
-                <button className="ctrl-btn secondary" onClick={() => audioRef.current.currentTime += 10}>
+                <button className="ctrl-btn secondary" onClick={() => { if (audioRef.current) audioRef.current.currentTime += 10; }}>
                   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1.5 16l5.5-4-5.5-4v8zm5.5 0l5.5-4-5.5-4v8z"/></svg>
                 </button>
               </div>
@@ -350,11 +328,7 @@ function MusicDetailPage() {
                   <input 
                     type="range" min="0" max="1" step="0.01" value={volume} 
                     className="volume-slider"
-                    onChange={(e) => {
-                      const val = parseFloat(e.target.value);
-                      setVolume(val);
-                      audioRef.current.volume = val;
-                    }}
+                    onChange={(e) => setVolume(parseFloat(e.target.value))}
                   />
                   <div className="volume-progress" style={{ width: `${volume * 100}%` }}></div>
                 </div>
@@ -413,27 +387,36 @@ function MusicDetailPage() {
               <h2>{song.title}</h2>
               <p>{song.artist}</p>
             </div>
+
+            <div className="mobile-progress-section" onClick={handleSeek}>
+               <div className="mobile-progress-bar-outer">
+                  <div className="mobile-progress-bar-inner" style={{ width: `${progress}%` }}></div>
+               </div>
+               <div className="mobile-time-labels">
+                  <span>{formatTime(currentTime)}</span>
+                  <span>{formatTime(duration)}</span>
+               </div>
+            </div>
+
             <div className="mobile-hero-actions">
               <button className="hero-action-btn" onClick={(e) => handleShare(e, song)}>
-                <span className="icon"><i className="fas fa-link"></i></span> Share
+                <i className="fas fa-link"></i> Share
               </button>
               <button className="hero-action-btn accent" onClick={(e) => handleDownload(e, song)}>
-                <span className="icon"><i className="fas fa-download"></i></span> Download
+                <i className="fas fa-download"></i> Download
               </button>
             </div>
           </div>
 
           <div className="lyrics-header">
-            <h3>Synchronized Lyrics</h3>
+            <h3>Lyrics</h3>
           </div>
           <div className="lyrics-container">
             {lyrics.length > 0 ? (
               lyrics.map((line, i) => (
                 <div 
                   key={i} 
-                  ref={i === activeLyricIndex ? activeLyricRef : null}
                   className="p-lyric-line-wrapper"
-                  onClick={() => { audioRef.current.currentTime = line.time; }}
                 >
                   <p className="p-lyric-line">{line.text}</p>
                 </div>
@@ -448,12 +431,30 @@ function MusicDetailPage() {
         </div>
       </div>
 
-      <audio 
-        ref={audioRef}
-        onTimeUpdate={handleTimeUpdate}
-        onLoadedMetadata={updateDuration}
-        crossOrigin="anonymous"
-      />
+      {/* Next Song Countdown Popup */}
+      {nextSongPopup.visible && (
+        <div className="next-song-popup">
+          <div className="popup-overlay"></div>
+          <div className="popup-content">
+            <div className="countdown-ring">
+              <svg viewBox="0 0 36 36">
+                <path className="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                <path className="ring-fill" strokeDasharray={`${(nextSongPopup.countdown / 4) * 100}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              </svg>
+              <span className="countdown-number">{nextSongPopup.countdown}</span>
+            </div>
+            <div className="next-song-info">
+              <span className="up-next-label">Up Next</span>
+              <h3 className="next-title">{nextSongPopup.song?.title}</h3>
+              <p className="next-artist">{nextSongPopup.song?.artist}</p>
+            </div>
+            <div className="popup-actions">
+              <button className="skip-btn" onClick={cancelNextSong}>Skip</button>
+              <button className="play-now-btn" onClick={() => { playSong(nextSongPopup.song); navigate(`/music/${nextSongPopup.song.id}`); }}>Play Now</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

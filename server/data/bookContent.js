@@ -1,6 +1,7 @@
 export const bookContent = {
-  title: "Grace Through Faith: Understanding Jesus Christ and John the Baptist",
-  description: "A comprehensive guide to understanding the Gospel through biblical sermons and lessons about Jesus Christ, John the Baptist, repentance, and salvation.",
+  title: "Have You Truly Been Born Again of Water and the Spirit?",
+  coverUrl: "https://bjnewlife.org/upload/book/HAVEYOUTRULYBEENBORNAGAINOFWATERANDTHESPIRIT2024L.jpg?ver=1709079147",
+  description: "A profound spiritual guide on receiving the forgiveness of sins and the indwelling of the Holy Spirit through the true gospel of water and the Spirit.",
   
   content: `
 <h1>Grace Through Faith: Understanding Jesus Christ and John the Baptist</h1>

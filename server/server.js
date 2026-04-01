@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import mongoose from 'mongoose';
 import { initPostgres, query } from './config/postgres.js';
 import contactRoutes from './routes/contact.js';
 import bookRoutes from './routes/book.js';
@@ -19,6 +20,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 initPostgres();
+
+// MongoDB Connection
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log('MongoDB Connected successfully'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 // CORS configuration
 const allowedOrigins = [

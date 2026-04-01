@@ -46,6 +46,8 @@ function Navigation() {
             <li><Link to="/contact" onClick={() => setIsOpen(false)}>Contact</Link></li>
             {user ? (
               <>
+                {user.isAdmin && <li><Link to="/admin" onClick={() => setIsOpen(false)}>Admin</Link></li>}
+                {user.isServant && <li><Link to="/servant" onClick={() => setIsOpen(false)}>Servant Dashboard</Link></li>}
                 <li><Link to="/order-history" onClick={() => setIsOpen(false)}>My Orders</Link></li>
                 <li className="user-profile">
                   <span className="user-name">{user.fullName}</span>

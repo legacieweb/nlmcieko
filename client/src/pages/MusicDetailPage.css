@@ -361,16 +361,11 @@
 
 .p-lyric-line-wrapper {
   padding: 1rem 0;
-  cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  opacity: 0.3;
-  transform: scale(0.95);
-  transform-origin: left center;
 }
 
 .p-lyric-line-wrapper:hover {
-  opacity: 1;
-  transform: scale(1.05);
+  transform: scale(1.02);
 }
 
 /* Mobile Mini Player (Hidden on Desktop) */
@@ -527,6 +522,46 @@
   border-color: var(--primary);
 }
 
+.mobile-progress-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.mobile-progress-bar-outer {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.mobile-progress-bar-inner {
+  height: 100%;
+  background: var(--primary);
+  box-shadow: 0 0 10px var(--primary);
+}
+
+.mobile-time-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.perfect-empty {
+  text-align: center;
+  padding: 4rem 0;
+  opacity: 0.5;
+}
+
+.perfect-empty .empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
 /* Responsive Mobile Mode */
 @media (max-width: 992px) {
   .full-screen-layout { flex-direction: column; overflow-y: auto; scroll-behavior: smooth; }
@@ -567,7 +602,7 @@
   }
   
   .p-lyric-line { font-size: 1.8rem; text-align: center; }
-  .p-lyric-line-wrapper { transform-origin: center center; opacity: 0.6; }
+  .p-lyric-line-wrapper { transform-origin: center center; }
   
   .mobile-mini-player { display: flex; }
 }

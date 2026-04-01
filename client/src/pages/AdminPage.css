@@ -161,6 +161,33 @@
 
 .status-pill.pending { background: rgba(234, 179, 8, 0.1); color: #eab308; }
 .status-pill.shipped { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+.status-pill.completed { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+.status-pill.in_progress { background: rgba(99, 102, 241, 0.1); color: #818cf8; }
+
+.users-manager, .servant-pages-manager {
+  margin-top: 2rem;
+}
+
+.users-manager table select {
+  background: rgba(15, 23, 42, 0.8);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.4rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.users-manager .add-song-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.servant-pages-manager .songs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
 
 .lyrics-manager {
   max-width: 800px;

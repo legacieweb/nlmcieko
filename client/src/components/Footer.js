@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './Footer.css';
 
 function Footer() {
+  const { user } = useAuth();
   return (
     <footer className="main-footer">
       <div className="container">
@@ -46,7 +48,8 @@ function Footer() {
               <li><Link to="/order">Free Books</Link></li>
               <li><Link to="/contact">Support</Link></li>
               <li><Link to="/login">My Account</Link></li>
-              <li><Link to="/admin">Admin</Link></li>
+              {user?.isAdmin && <li><Link to="/admin">Admin</Link></li>}
+              {user?.isServant && <li><Link to="/servant">Ministry Space</Link></li>}
             </ul>
           </div>
         </div>

@@ -13,13 +13,13 @@ export const signup = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const result = await query(
-      'INSERT INTO users (full_name, email, password) VALUES ($1, $2, $3) RETURNING id, full_name, email, is_admin',
+      'INSERT INTO users (full_name, email, password) VALUES ($1, $2, $3) RETURNING id, full_name, email, is_admin, is_servant',
       [fullName, email, hashedPassword]
     );
 
     const user = result.rows[0];
     const token = jwt.sign(
-      { id: user.id, email: user.email, isAdmin: user.is_admin },
+      { id: user.id, email: user.email, isAdmin: user.is_admin, isServant: user.is_servant },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
@@ -30,7 +30,8 @@ export const signup = async (req, res) => {
         id: user.id,
         fullName: user.full_name,
         email: user.email,
-        isAdmin: user.is_admin
+        isAdmin: user.is_admin,
+        isServant: user.is_servant
       }
     });
   } catch (error) {
@@ -55,7 +56,7 @@ export const login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user.id, email: user.email, isAdmin: user.is_admin },
+      { id: user.id, email: user.email, isAdmin: user.is_admin, isServant: user.is_servant },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
@@ -66,7 +67,8 @@ export const login = async (req, res) => {
         id: user.id,
         fullName: user.full_name,
         email: user.email,
-        isAdmin: user.is_admin
+        isAdmin: user.is_admin,
+        isServant: user.is_servant
       }
     });
   } catch (error) {
@@ -78,7 +80,7 @@ export const login = async (req, res) => {
 export const getMe = async (req, res) => {
   try {
     const result = await query(
-      'SELECT id, full_name, email, is_admin FROM users WHERE id = $1',
+      'SELECT id, full_name, email, is_admin, is_servant FROM users WHERE id = $1',
       [req.user.id]
     );
     if (result.rows.length === 0) {
@@ -89,7 +91,8 @@ export const getMe = async (req, res) => {
       id: user.id,
       fullName: user.full_name,
       email: user.email,
-      isAdmin: user.is_admin
+      isAdmin: user.is_admin,
+      isServant: user.is_servant
     });
   } catch (error) {
     console.error('GetMe error:', error);

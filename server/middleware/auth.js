@@ -13,7 +13,7 @@ export const protect = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
-    req.user = decoded; // Contains id, email, isAdmin
+    req.user = decoded; // Contains id, email, isAdmin, isServant
     next();
   } catch (error) {
     return res.status(401).json({ message: 'Not authorized to access this route' });
@@ -25,5 +25,13 @@ export const isAdmin = (req, res, next) => {
     next();
   } else {
     res.status(403).json({ message: 'Access denied: Admin only' });
+  }
+};
+
+export const isServant = (req, res, next) => {
+  if (req.user && (req.user.isServant || req.user.isAdmin)) {
+    next();
+  } else {
+    res.status(403).json({ message: 'Access denied: Servant or Admin only' });
   }
 };

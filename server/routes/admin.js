@@ -3,8 +3,27 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { query } from '../config/postgres.js';
-import { protect, isAdmin } from '../middleware/auth.js';
+import { protect, isAdmin, isServant } from '../middleware/auth.js';
 import multer from 'multer';
+
+import { 
+  getUsers, 
+  promoteToServant, 
+  createServantPage, 
+  getServantPages, 
+  assignWebpage,
+  subscribeToGenre,
+  getNotifications,
+  clearNotifications,
+  getAssignedPage,
+  updateServantCustomization,
+  getServantCustomization,
+  getPublicServantPage,
+  recordServantVisit,
+  contactServant,
+  getServantContacts,
+  getServantVisits
+} from '../controllers/adminController.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -43,6 +62,10 @@ const upload = multer({
 });
 
 // ===== PUBLIC ROUTES =====
+
+router.get('/servant-view/:id', getPublicServantPage);
+router.post('/servant-view/visit', recordServantVisit);
+router.post('/servant-view/contact', contactServant);
 
 // Get all songs from database (optimized: exclude lyrics for faster loading)
 router.get('/songs', async (req, res) => {
@@ -91,10 +114,9 @@ router.get('/lyrics/:songId', async (req, res) => {
 // ===== ADMIN PROTECTED ROUTES =====
 
 router.use(protect);
-router.use(isAdmin);
 
-// Add new song with audio file upload, title, artist, genre, thumbnail URL and lyrics
-router.post('/songs', upload.single('audioFile'), async (req, res) => {
+// Song management (Admin Only)
+router.post('/songs', isAdmin, upload.single('audioFile'), async (req, res) => {
   const { title, artist, genre, lyrics, thumbnailUrl } = req.body;
   
   // Get the file URL or use provided URL
@@ -120,8 +142,7 @@ router.post('/songs', upload.single('audioFile'), async (req, res) => {
   }
 });
 
-// Update song (including lyrics and new audio file)
-router.put('/songs/:id', upload.single('audioFile'), async (req, res) => {
+router.put('/songs/:id', isAdmin, upload.single('audioFile'), async (req, res) => {
   const { id } = req.params;
   const { title, artist, genre, lyrics, thumbnailUrl } = req.body;
   
@@ -147,8 +168,7 @@ router.put('/songs/:id', upload.single('audioFile'), async (req, res) => {
   }
 });
 
-// Delete song
-router.delete('/songs/:id', async (req, res) => {
+router.delete('/songs/:id', isAdmin, async (req, res) => {
   const { id } = req.params;
   
   try {
@@ -159,8 +179,8 @@ router.delete('/songs/:id', async (req, res) => {
   }
 });
 
-// Analytics
-router.get('/analytics', async (req, res) => {
+// Analytics (Admin Only)
+router.get('/analytics', isAdmin, async (req, res) => {
   try {
     const totalOrders = await query('SELECT COUNT(*) FROM orders');
     const ordersByStatus = await query('SELECT status, COUNT(*) FROM orders GROUP BY status');
@@ -191,8 +211,8 @@ router.get('/analytics', async (req, res) => {
   }
 });
 
-// Orders
-router.get('/orders', async (req, res) => {
+// Orders (Admin Only)
+router.get('/orders', isAdmin, async (req, res) => {
   try {
     const result = await query('SELECT * FROM orders ORDER BY created_at DESC');
     res.json(result.rows);
@@ -201,8 +221,8 @@ router.get('/orders', async (req, res) => {
   }
 });
 
-// Beliefs
-router.get('/beliefs', async (req, res) => {
+// Beliefs (Admin Only)
+router.get('/beliefs', isAdmin, async (req, res) => {
   try {
     const result = await query(`
       SELECT b.*, u.full_name 
@@ -216,8 +236,8 @@ router.get('/beliefs', async (req, res) => {
   }
 });
 
-// Contacts
-router.get('/contacts', async (req, res) => {
+// Contacts (Admin Only)
+router.get('/contacts', isAdmin, async (req, res) => {
   try {
     const result = await query('SELECT * FROM contacts ORDER BY created_at DESC');
     res.json(result.rows);
@@ -225,5 +245,26 @@ router.get('/contacts', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+// User Management (Admin Only)
+router.get('/users', isAdmin, getUsers);
+router.post('/users/promote', isAdmin, promoteToServant);
+router.post('/users/assign-page', isAdmin, assignWebpage);
+
+// Servant Pages Management (Admin Only)
+router.get('/servant-pages', isAdmin, getServantPages);
+router.post('/servant-pages', isAdmin, createServantPage);
+
+// Servant Workspace routes (Servant or Admin)
+router.get('/servant/page', isServant, getAssignedPage);
+router.post('/servant/subscribe', isServant, subscribeToGenre);
+router.get('/servant/notifications', isServant, getNotifications);
+router.post('/servant/clear-notifications', isServant, clearNotifications);
+
+// Servant customization (MongoDB) (Servant or Admin)
+router.get('/servant/customization', isServant, getServantCustomization);
+router.post('/servant/customization', isServant, updateServantCustomization);
+router.get('/servant/contacts', isServant, getServantContacts);
+router.get('/servant/visits', isServant, getServantVisits);
 
 export default router;

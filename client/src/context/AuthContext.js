@@ -50,8 +50,25 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const checkStatus = async () => {
+    try {
+      const response = await api.get('/auth/me');
+      const userData = response.data;
+      const storedUser = JSON.parse(localStorage.getItem('user'));
+      
+      // Update local storage but we still need a new token if status changed
+      const updatedUser = { ...storedUser, ...userData };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setUser(updatedUser);
+      return userData;
+    } catch (error) {
+      console.error('Status check failed:', error);
+      return null;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, checkStatus, loading }}>
       {children}
     </AuthContext.Provider>
   );

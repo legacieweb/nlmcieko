@@ -8,6 +8,8 @@ function AdminPage() {
   const [orders, setOrders] = useState([]);
   const [beliefs, setBeliefs] = useState([]);
   const [contacts, setContacts] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [servantPages, setServantPages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [statusMessage, setStatusMessage] = useState(null);
@@ -18,6 +20,8 @@ function AdminPage() {
   const [selectedSong, setSelectedSong] = useState(null);
   const [saving, setSaving] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showPageForm, setShowPageForm] = useState(false);
+  const [pageFormData, setPageFormData] = useState({ title: '', content: '' });
   
   // Form state
   const [formData, setFormData] = useState({
@@ -70,6 +74,16 @@ function AdminPage() {
       } else if (activeTab === 'contacts') {
         const res = await api.get('/admin/contacts');
         setContacts(res.data);
+      } else if (activeTab === 'users') {
+        const [usersRes, pagesRes] = await Promise.all([
+          api.get('/admin/users'),
+          api.get('/admin/servant-pages')
+        ]);
+        setUsers(usersRes.data);
+        setServantPages(pagesRes.data);
+      } else if (activeTab === 'servant-pages') {
+        const res = await api.get('/admin/servant-pages');
+        setServantPages(res.data);
       }
     } catch (err) {
       console.error(err);
@@ -201,6 +215,51 @@ function AdminPage() {
     setShowAddForm(false);
   };
 
+  const handlePromote = async (userId, isServant) => {
+    try {
+      await api.post('/admin/users/promote', { userId, isServant });
+      fetchData();
+      setStatusMessage({ type: 'success', text: `User ${isServant ? 'promoted' : 'demoted'} successfully` });
+      setTimeout(() => setStatusMessage(null), 3000);
+    } catch (err) {
+      console.error(err);
+      setStatusMessage({ type: 'error', text: 'Error updating user status' });
+      setTimeout(() => setStatusMessage(null), 3000);
+    }
+  };
+
+  const handlePageSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await api.post('/admin/servant-pages', pageFormData);
+      setStatusMessage({ type: 'success', text: 'Page created successfully' });
+      setPageFormData({ title: '', content: '' });
+      setShowPageForm(false);
+      fetchData();
+      setTimeout(() => setStatusMessage(null), 3000);
+    } catch (err) {
+      console.error(err);
+      setStatusMessage({ type: 'error', text: 'Error creating page' });
+      setTimeout(() => setStatusMessage(null), 3000);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAssignPage = async (userId, pageId) => {
+    try {
+      await api.post('/admin/users/assign-page', { userId, pageId: parseInt(pageId) || null });
+      fetchData();
+      setStatusMessage({ type: 'success', text: 'Page assigned successfully' });
+      setTimeout(() => setStatusMessage(null), 3000);
+    } catch (err) {
+      console.error(err);
+      setStatusMessage({ type: 'error', text: 'Error assigning page' });
+      setTimeout(() => setStatusMessage(null), 3000);
+    }
+  };
+
   const genreColors = {
     gospel: '#6366f1',
     trap: '#ec4899',
@@ -320,6 +379,8 @@ function AdminPage() {
                 <button className={activeTab === 'orders' ? 'active' : ''} onClick={() => setActiveTab('orders')}>Orders</button>
                 <button className={activeTab === 'beliefs' ? 'active' : ''} onClick={() => setActiveTab('beliefs')}>Belief Data</button>
                 <button className={activeTab === 'songs' ? 'active' : ''} onClick={() => setActiveTab('songs')}>Manage Songs</button>
+                <button className={activeTab === 'users' ? 'active' : ''} onClick={() => setActiveTab('users')}>Users</button>
+                <button className={activeTab === 'servant-pages' ? 'active' : ''} onClick={() => setActiveTab('servant-pages')}>Servant Pages</button>
                 <button className={activeTab === 'contacts' ? 'active' : ''} onClick={() => setActiveTab('contacts')}>Contacts</button>
               </nav>
             </aside>
@@ -571,6 +632,155 @@ function AdminPage() {
                               <td>{b.email}</td>
                               <td><strong>{b.percentage}%</strong></td>
                               <td>{new Date(b.created_at).toLocaleString()}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+
+                  {activeTab === 'users' && (
+                    <div className="users-manager">
+                      <div className="songs-header">
+                        <h1>User Management</h1>
+                      </div>
+                      <div className="table-view">
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>Name</th>
+                              <th>Email</th>
+                              <th>Role</th>
+                              <th>Assigned Page</th>
+                              <th>Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {users.map(u => (
+                              <tr key={u.id}>
+                                <td>{u.full_name}</td>
+                                <td>{u.email}</td>
+                                <td>
+                                  {u.is_admin ? <span className="status-pill completed">Admin</span> : (
+                                    u.is_servant ? <span className="status-pill in_progress">Servant</span> : <span className="status-pill pending">User</span>
+                                  )}
+                                </td>
+                                <td>
+                                  <select 
+                                    value={u.assigned_page_id || ''} 
+                                    onChange={(e) => handleAssignPage(u.id, e.target.value)}
+                                    disabled={!u.is_servant}
+                                    style={{ background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid var(--glass-border)', padding: '4px' }}
+                                  >
+                                    <option value="">No Page</option>
+                                    {servantPages.map(p => (
+                                      <option key={p.id} value={p.id}>{p.title}</option>
+                                    ))}
+                                  </select>
+                                </td>
+                                <td>
+                                  {!u.is_admin && (
+                                    <button 
+                                      className={u.is_servant ? "delete-btn" : "add-song-btn"}
+                                      onClick={() => handlePromote(u.id, !u.is_servant)}
+                                      style={{ padding: '4px 8px', fontSize: '12px', width: 'auto' }}
+                                    >
+                                      {u.is_servant ? 'Demote' : 'Promote to Servant'}
+                                    </button>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTab === 'servant-pages' && (
+                    <div className="servant-pages-manager">
+                      <div className="songs-header">
+                        <h1>Servant Webpages</h1>
+                        <button className="add-song-btn" onClick={() => setShowPageForm(true)}>+ Create Page</button>
+                      </div>
+
+                      {showPageForm && (
+                        <div className="song-form-container">
+                          <h2>Create New Webpage</h2>
+                          <form onSubmit={handlePageSubmit}>
+                            <div className="form-group">
+                              <label>Page Title</label>
+                              <input 
+                                type="text" 
+                                value={pageFormData.title}
+                                onChange={(e) => setPageFormData({...pageFormData, title: e.target.value})}
+                                required
+                                placeholder="e.g. Gospel Outreach"
+                              />
+                            </div>
+                            <div className="form-group">
+                              <label>Initial Content (Markdown/HTML supported)</label>
+                              <textarea 
+                                value={pageFormData.content}
+                                onChange={(e) => setPageFormData({...pageFormData, content: e.target.value})}
+                                required
+                                placeholder="Enter page content here..."
+                                rows="10"
+                                style={{ width: '100%', background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid var(--glass-border)', padding: '10px' }}
+                              ></textarea>
+                            </div>
+                            <div className="form-actions">
+                              <button type="button" className="cancel-btn" onClick={() => setShowPageForm(false)}>Cancel</button>
+                              <button type="submit" className="save-btn" disabled={saving}>
+                                {saving ? 'Creating...' : 'Create Page'}
+                              </button>
+                            </div>
+                          </form>
+                        </div>
+                      )}
+
+                      <div className="table-view">
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>ID</th>
+                              <th>Title</th>
+                              <th>Created At</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {servantPages.map(p => (
+                              <tr key={p.id}>
+                                <td>#{p.id}</td>
+                                <td>{p.title}</td>
+                                <td>{new Date(p.created_at).toLocaleDateString()}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTab === 'contacts' && (
+                    <div className="table-view">
+                      <h1>Contact Messages</h1>
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Subject</th>
+                            <th>Date</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {contacts.map(c => (
+                            <tr key={c.id}>
+                              <td>{c.name}</td>
+                              <td>{c.email}</td>
+                              <td>{c.subject}</td>
+                              <td>{new Date(c.created_at).toLocaleDateString()}</td>
                             </tr>
                           ))}
                         </tbody>

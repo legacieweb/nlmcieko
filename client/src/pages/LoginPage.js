@@ -36,11 +36,17 @@ function LoginPage() {
 
     setLoading(true);
     try {
-      await login(formData.email, formData.password);
+      const { user } = await login(formData.email, formData.password);
 
       setMessage('Login successful! Redirecting...');
       setTimeout(() => {
-        navigate('/order');
+        if (user.isAdmin) {
+          navigate('/admin');
+        } else if (user.isServant) {
+          navigate('/servant');
+        } else {
+          navigate('/order');
+        }
       }, 2000);
     } catch (error) {
       setError(error.response?.data?.message || 'Error logging in');

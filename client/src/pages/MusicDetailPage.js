@@ -21,6 +21,7 @@ function MusicDetailPage() {
     setVolume,
     audioRef,
     toast,
+    showToast,
     nextSongPopup,
     cancelNextSong
   } = useMusic();
@@ -222,7 +223,7 @@ function MusicDetailPage() {
     e?.stopPropagation();
     const shareUrl = `${window.location.origin}/#/music/${song.id}`;
     navigator.clipboard.writeText(shareUrl);
-    alert('Link copied!');
+    showToast('Link copied!');
   };
 
   if (pageLoading || !song) return <MusicPreloader />;

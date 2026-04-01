@@ -1,11 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useMusic } from '../context/MusicContext';
 import './ServantPage.css';
 
 function ServantPage() {
+  const { tab } = useParams();
+  const navigate = useNavigate();
   const { user: authUser, checkStatus, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const { showToast } = useMusic();
+  const [activeTab, setActiveTab] = useState(tab || 'dashboard');
   const [page, setPage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -13,6 +18,17 @@ function ServantPage() {
   const [notifications, setNotifications] = useState(0);
   const [subscription, setSubscription] = useState('');
   const [saving, setSaving] = useState(false);
+  const [showWidgetForm, setShowWidgetForm] = useState(false);
+  const [newWidget, setNewWidget] = useState({ title: '', content: '' });
+
+  // Update active tab when URL changes
+  useEffect(() => {
+    if (tab) {
+      setActiveTab(tab);
+    } else {
+      setActiveTab('dashboard');
+    }
+  }, [tab]);
   
   const [customization, setCustomization] = useState({
     themeColor: '#818cf8',
@@ -92,9 +108,9 @@ function ServantPage() {
     setSaving(true);
     try {
       await api.post('/admin/servant/customization', customization);
-      alert('Profile updated successfully!');
+      showToast('Profile updated successfully!');
     } catch (err) {
-      alert('Failed to update profile');
+      showToast('Failed to update profile');
     } finally {
       setSaving(false);
     }
@@ -107,8 +123,9 @@ function ServantPage() {
       const user = JSON.parse(localStorage.getItem('user'));
       user.music_genre_subscription = genre;
       localStorage.setItem('user', JSON.stringify(user));
+      showToast(`Subscribed to ${genre}`);
     } catch (err) {
-      alert('Subscription failed');
+      showToast('Subscription failed');
     }
   };
 
@@ -121,14 +138,16 @@ function ServantPage() {
     }
   };
 
-  const addWidget = () => {
-    const title = prompt("Widget Title:");
-    const content = prompt("Widget Content:");
-    if (title && content) {
+  const addWidget = (e) => {
+    e.preventDefault();
+    if (newWidget.title && newWidget.content) {
       setCustomization(prev => ({
         ...prev,
-        customWidgets: [...prev.customWidgets, { title, content, id: Date.now() }]
+        customWidgets: [...prev.customWidgets, { ...newWidget, id: Date.now() }]
       }));
+      setNewWidget({ title: '', content: '' });
+      setShowWidgetForm(false);
+      showToast('Widget added locally. Save changes to keep it.');
     }
   };
 
@@ -145,7 +164,7 @@ function ServantPage() {
     const slug = identifier.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
     const link = `${window.location.origin}/#/servant-view/${slug}`;
     navigator.clipboard.writeText(link);
-    alert('Shareable link copied to clipboard!');
+    showToast('Shareable link copied!');
   };
 
   if (loading) return (
@@ -196,22 +215,22 @@ function ServantPage() {
         </div>
 
         <nav className="servant-nav">
-          <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>
+          <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => navigate('/servant')}>
             <i className="fas fa-th-large"></i> <span>Dashboard</span>
           </div>
-          <div className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => setActiveTab('profile')}>
+          <div className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => navigate('/servant/profile')}>
             <i className="fas fa-paint-brush"></i> <span>Appearance</span>
           </div>
-          <div className={`nav-item ${activeTab === 'content' ? 'active' : ''}`} onClick={() => setActiveTab('content')}>
+          <div className={`nav-item ${activeTab === 'content' ? 'active' : ''}`} onClick={() => navigate('/servant/content')}>
             <i className="fas fa-file-alt"></i> <span>Content</span>
           </div>
-          <div className={`nav-item ${activeTab === 'contacts' ? 'active' : ''}`} onClick={() => setActiveTab('contacts')}>
-            <i className="fas fa-comment-dots"></i> <span>Inquiries</span>
-            {servantContacts.length > 0 && <span className="notif-badge">{servantContacts.length}</span>}
-          </div>
-          <div className={`nav-item ${activeTab === 'visitors' ? 'active' : ''}`} onClick={() => setActiveTab('visitors')}>
+          <div className={`nav-item ${activeTab === 'visitors' ? 'active' : ''}`} onClick={() => navigate('/servant/visitors')}>
             <i className="fas fa-users"></i> <span>Visitors</span>
             {servantVisits.length > 0 && <span className="notif-badge">{servantVisits.length}</span>}
+          </div>
+          <div className={`nav-item ${activeTab === 'contacts' ? 'active' : ''}`} onClick={() => navigate('/servant/contacts')}>
+            <i className="fas fa-comment-dots"></i> <span>Inquiries</span>
+            {servantContacts.length > 0 && <span className="notif-badge">{servantContacts.length}</span>}
           </div>
           <div className="nav-item" onClick={clearNotifs}>
             <i className="fas fa-bell"></i> <span>Alerts</span>
@@ -334,10 +353,42 @@ function ServantPage() {
           <>
             <header className="servant-header">
               <h1>Page Content</h1>
-              <button className="save-cust-btn-top" onClick={addWidget}>Add Widget</button>
+              {!showWidgetForm && <button className="save-cust-btn-top" onClick={() => setShowWidgetForm(true)}>New Widget</button>}
             </header>
             
             <div className="dashboard-sections">
+              {showWidgetForm && (
+                <section className="section-card widget-form-card">
+                  <h3><i className="fas fa-plus-circle"></i> New Personal Widget</h3>
+                  <form onSubmit={addWidget}>
+                    <div className="control-group">
+                      <label>Widget Title</label>
+                      <input 
+                        type="text" 
+                        value={newWidget.title} 
+                        placeholder="e.g. My Favorite Verse" 
+                        onChange={(e) => setNewWidget({...newWidget, title: e.target.value})}
+                        required
+                      />
+                    </div>
+                    <div className="control-group">
+                      <label>Widget Content</label>
+                      <textarea 
+                        value={newWidget.content} 
+                        placeholder="Type your message here..." 
+                        onChange={(e) => setNewWidget({...newWidget, content: e.target.value})}
+                        rows="3"
+                        required
+                      ></textarea>
+                    </div>
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                      <button type="submit" className="save-cust-btn-top">Add Widget</button>
+                      <button type="button" className="logout-btn-sm" style={{ width: 'auto', background: 'rgba(255,255,255,0.05)', color: '#fff' }} onClick={() => setShowWidgetForm(false)}>Cancel</button>
+                    </div>
+                  </form>
+                </section>
+              )}
+
               <section className="section-card">
                 <h3>Admin Assigned Content</h3>
                 <div className="contact-body" dangerouslySetInnerHTML={{ __html: page?.content || 'No content assigned yet.' }}></div>

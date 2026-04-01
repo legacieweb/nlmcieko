@@ -22,6 +22,7 @@ export const MusicProvider = ({ children }) => {
     return localStorage.getItem('libraryView') || 'songs';
   });
   const [toast, setToast] = useState(null);
+  const [toastAction, setToastAction] = useState(null);
   const [pendingSong, setPendingSong] = useState(null);
   const [isUserInteracted, setIsUserInteracted] = useState(false);
   const [nextSongPopup, setNextSongPopup] = useState({ visible: false, song: null, countdown: 4 });
@@ -62,9 +63,13 @@ export const MusicProvider = ({ children }) => {
     };
   }, []);
 
-  const showToast = useCallback((message, duration = 3000) => {
+  const showToast = useCallback((message, duration = 3000, action = null, actionText = '') => {
     setToast(message);
-    setTimeout(() => setToast(null), duration);
+    setToastAction(action ? { callback: action, text: actionText } : null);
+    setTimeout(() => {
+      setToast(null);
+      setToastAction(null);
+    }, duration);
   }, []);
 
   const safePlay = useCallback(async () => {
@@ -255,6 +260,8 @@ export const MusicProvider = ({ children }) => {
     handleNext,
     handlePrev,
     toast,
+    toastAction,
+    showToast,
     nextSongPopup,
     cancelNextSong,
     audioRef

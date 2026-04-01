@@ -34,6 +34,33 @@
   100% { transform: scale(1); opacity: 1; }
 }
 
+.toast-action-btn {
+  background: white;
+  color: #6366f1;
+  border: none;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  pointer-events: auto;
+  margin-left: 8px;
+}
+
+.toast-action-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+}
+
+.music-toast-container {
+  pointer-events: none;
+}
+
+.music-toast {
+  pointer-events: auto;
+}
+
 @media (max-width: 768px) {
   .main-content {
     min-height: auto;

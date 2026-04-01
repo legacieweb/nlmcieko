@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
+import { useMusic } from '../context/MusicContext';
 import './AdminPage.css';
 
 function AdminPage() {
+  const { showToast } = useMusic();
   const [activeTab, setActiveTab] = useState('analytics');
   const [analytics, setAnalytics] = useState(null);
   const [orders, setOrders] = useState([]);
@@ -258,6 +260,24 @@ function AdminPage() {
       setStatusMessage({ type: 'error', text: 'Error assigning page' });
       setTimeout(() => setStatusMessage(null), 3000);
     }
+  };
+
+  const handleResetPage = async (userId) => {
+    showToast(
+      "Confirm reset for this servant page?", 
+      6000, 
+      async () => {
+        try {
+          await api.post('/admin/users/reset-page', { userId });
+          fetchData();
+          showToast('Page reset successfully');
+        } catch (err) {
+          console.error(err);
+          showToast('Error resetting page');
+        }
+      },
+      "CONFIRM RESET"
+    );
   };
 
   const genreColors = {
@@ -667,10 +687,10 @@ function AdminPage() {
                                 </td>
                                 <td>
                                   <select 
+                                    className="admin-page-assign-select"
                                     value={u.assigned_page_id || ''} 
                                     onChange={(e) => handleAssignPage(u.id, e.target.value)}
                                     disabled={!u.is_servant}
-                                    style={{ background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid var(--glass-border)', padding: '4px' }}
                                   >
                                     <option value="">No Page</option>
                                     {servantPages.map(p => (
@@ -679,15 +699,27 @@ function AdminPage() {
                                   </select>
                                 </td>
                                 <td>
-                                  {!u.is_admin && (
-                                    <button 
-                                      className={u.is_servant ? "delete-btn" : "add-song-btn"}
-                                      onClick={() => handlePromote(u.id, !u.is_servant)}
-                                      style={{ padding: '4px 8px', fontSize: '12px', width: 'auto' }}
-                                    >
-                                      {u.is_servant ? 'Demote' : 'Promote to Servant'}
-                                    </button>
-                                  )}
+                                  <div className="action-btns" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                    {!u.is_admin && (
+                                      <button 
+                                        className={u.is_servant ? "delete-btn" : "add-song-btn"}
+                                        onClick={() => handlePromote(u.id, !u.is_servant)}
+                                        style={{ padding: '6px 10px', fontSize: '11px', width: 'auto', margin: 0 }}
+                                      >
+                                        {u.is_servant ? 'Demote' : 'Promote'}
+                                      </button>
+                                    )}
+                                    {u.is_servant && (
+                                      <button 
+                                        className="cancel-btn-sm"
+                                        onClick={() => handleResetPage(u.id)}
+                                        style={{ padding: '6px 10px', fontSize: '11px', width: 'auto', margin: 0, background: '#64748b' }}
+                                        title="Reset servant page to default"
+                                      >
+                                        Reset Page
+                                      </button>
+                                    )}
+                                  </div>
                                 </td>
                               </tr>
                             ))}

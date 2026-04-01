@@ -367,3 +367,34 @@ export const getServantVisits = async (req, res) => {
     res.status(500).json({ message: 'Error fetching visits' });
   }
 };
+
+export const resetServantPage = async (req, res) => {
+  const { userId } = req.body;
+  try {
+    // Get user and their assigned page
+    const userRes = await query('SELECT full_name, email, assigned_page_id FROM users WHERE id = $1', [userId]);
+    if (userRes.rows.length === 0) return res.status(404).json({ message: 'User not found' });
+    
+    const user = userRes.rows[0];
+    const pageId = user.assigned_page_id;
+
+    if (pageId) {
+      // Reset PostgreSQL page content
+      await query(
+        'UPDATE servant_pages SET title = $1, content = $2 WHERE id = $3',
+        [`${user.full_name}'s Ministry Page`, `Welcome to the ministry page of ${user.full_name}. More content coming soon!`, pageId]
+      );
+    }
+
+    // Reset MongoDB customizations
+    await ServantCustomization.deleteOne({ email: user.email });
+    
+    // Optional: Reset visits
+    await ServantVisit.deleteMany({ servantId: userId });
+
+    res.json({ message: 'Page reset to default successfully' });
+  } catch (error) {
+    console.error('Reset error:', error);
+    res.status(500).json({ message: 'Error resetting page' });
+  }
+};

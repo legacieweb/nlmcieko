@@ -22,7 +22,8 @@ import {
   recordServantVisit,
   contactServant,
   getServantContacts,
-  getServantVisits
+  getServantVisits,
+  resetServantPage
 } from '../controllers/adminController.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -250,6 +251,7 @@ router.get('/contacts', isAdmin, async (req, res) => {
 router.get('/users', isAdmin, getUsers);
 router.post('/users/promote', isAdmin, promoteToServant);
 router.post('/users/assign-page', isAdmin, assignWebpage);
+router.post('/users/reset-page', isAdmin, resetServantPage);
 
 // Servant Pages Management (Admin Only)
 router.get('/servant-pages', isAdmin, getServantPages);

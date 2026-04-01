@@ -34,6 +34,7 @@ function MusicPage() {
     progress,
     volume,
     setVolume,
+    showToast,
     nextSongPopup,
     cancelNextSong
   } = useMusic();
@@ -128,7 +129,7 @@ function MusicPage() {
     e.stopPropagation();
     const shareUrl = `${window.location.origin}/#/music/${song.id}`;
     navigator.clipboard.writeText(shareUrl);
-    alert('Link copied!');
+    showToast('Link copied!');
   };
 
   if (pageLoading) return <MusicPreloader />;

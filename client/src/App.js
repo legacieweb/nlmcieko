@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import ScrollToTop from './components/ScrollToTop';
 import { AuthProvider } from './context/AuthContext';
 import { MusicProvider, useMusic } from './context/MusicContext';
@@ -27,15 +27,68 @@ import './styles/App.css';
 
 // Helper component to render Toast from context
 const MusicToast = () => {
-  const { toast } = useMusic();
+  const { toast, toastAction, showToast } = useMusic();
   if (!toast) return null;
   return (
     <div className="music-toast-container">
       <div className="music-toast">
         <i className="fas fa-music"></i>
         <span>{toast}</span>
+        {toastAction && (
+          <button 
+            className="toast-action-btn" 
+            onClick={() => {
+              toastAction.callback();
+              // Clear toast immediately on action
+              showToast(null, 0);
+            }}
+          >
+            {toastAction.text}
+          </button>
+        )}
       </div>
     </div>
+  );
+};
+
+const AppContent = () => {
+  const location = useLocation();
+
+  const isServantDashboard = location.pathname.startsWith('/servant') && location.pathname !== '/servant-view';
+
+  return (
+    <>
+      <ScrollToTop />
+      <Navigation 
+        isServantPage={isServantDashboard} 
+        onHamburgerClick={null} 
+      />
+      <MusicToast />
+      <main className="main-content">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/order" element={<OrderPage />} />
+          <Route path="/order-history" element={<OrderHistoryPage />} />
+          <Route path="/portfolio" element={<PortfolioPage />} />
+          <Route path="/music" element={<MusicPage />} />
+          <Route path="/music/:id" element={<MusicDetailPage />} />
+          <Route path="/gallery/:type" element={<GalleryPage />} />
+          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/servant" element={<ServantPage />} />
+          <Route path="/servant/:tab" element={<ServantPage />} />
+          <Route path="/servant-view/:name" element={<ServantPublicView />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </main>
+      <FloatingPlayer />
+      <Footer />
+    </>
   );
 };
 
@@ -44,32 +97,7 @@ function App() {
     <AuthProvider>
       <MusicProvider>
         <Router>
-          <ScrollToTop />
-          <Navigation />
-          <MusicToast />
-          <main className="main-content">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/signup" element={<SignupPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/order" element={<OrderPage />} />
-              <Route path="/order-history" element={<OrderHistoryPage />} />
-              <Route path="/portfolio" element={<PortfolioPage />} />
-              <Route path="/music" element={<MusicPage />} />
-              <Route path="/music/:id" element={<MusicDetailPage />} />
-              <Route path="/gallery/:type" element={<GalleryPage />} />
-              <Route path="/admin" element={<AdminPage />} />
-              <Route path="/servant" element={<ServantPage />} />
-              <Route path="/servant-view/:name" element={<ServantPublicView />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/terms-of-service" element={<TermsOfService />} />
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-          </main>
-          <FloatingPlayer />
-          <Footer />
+          <AppContent />
         </Router>
       </MusicProvider>
     </AuthProvider>

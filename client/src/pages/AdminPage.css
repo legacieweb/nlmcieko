@@ -168,13 +168,38 @@
   margin-top: 2rem;
 }
 
-.users-manager table select {
-  background: rgba(15, 23, 42, 0.8);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 0.4rem;
-  border-radius: 8px;
+.admin-page-assign-select {
+  background: #1e293b !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 0.6rem 1rem !important;
+  border-radius: 10px !important;
   cursor: pointer;
+  font-size: 0.9rem;
+  width: 100%;
+  min-width: 150px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.admin-page-assign-select:hover:not(:disabled) {
+  border-color: #38bdf8 !important;
+  background: #2d3748 !important;
+}
+
+.admin-page-assign-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.admin-page-assign-select option {
+  background: #1e293b;
+  color: #fff;
+  padding: 10px;
+}
+
+.users-manager .action-btns button {
+  white-space: nowrap;
 }
 
 .users-manager .add-song-btn {

@@ -80,10 +80,10 @@ function HomePage() {
   return (
     <div className="homepage">
       <Helmet>
-        <title>Grace Church | Discover Your Eternal Purpose - Home</title>
-        <meta name="description" content="Discover your eternal purpose through the Word of God at Grace Church. Explore our music collection, free books, and spiritual resources for your journey." />
-        <meta property="og:title" content="Grace Church - Discover Your Eternal Purpose" />
-        <meta property="og:description" content="Join us at Grace Church to explore the Word of God and discover your spiritual path through music and resources." />
+        <title>Nlm Cieko | Discover Your Eternal Purpose - Home</title>
+        <meta name="description" content="Discover your eternal purpose through the Word of God at Nlm Cieko. Explore our music collection, free books, and spiritual resources for your journey." />
+        <meta property="og:title" content="Nlm Cieko - Discover Your Eternal Purpose" />
+        <meta property="og:description" content="Join us at Nlm Cieko to explore the Word of God and discover your spiritual path through music and resources." />
       </Helmet>
       {/* Hero Section */}
       <section className="hero-section">
@@ -92,31 +92,37 @@ function HomePage() {
           <div className="hero-grid">
             <div className="hero-content">
               <h1 className="hero-title">
-                Discover Your <span className="highlight">Eternal Purpose</span>
+                Spiritual <span className="highlight">Melodies</span>
               </h1>
               <p className="hero-subtitle">
-                Life is a journey, but do you know where it leads? 
-                Prepare your soul for the afterlife through the unchanging Word of God.
+                Experience the power of grace through our curated collection of gospel harmonies. 
+                Let the music guide your heart towards eternal peace.
               </p>
               <div className="hero-actions">
-                <a href="/order" className="btn btn-primary">Order Book</a>
-                <a href="/assets/English01%5B2025%5D%20(1).pdf" download className="btn btn-outline">Download PDF</a>
+                <a href="/#/music" className="btn btn-primary btn-glow">
+                  Explore Music Library <i className="fas fa-play ml-2"></i>
+                </a>
+                <a href="/#/about" className="btn btn-outline">Our Mission</a>
               </div>
             </div>
             
-            <div className="hero-book">
-              {book && (
-                <div className="book-card-mini">
-                  <div className="book-visual-mini">
-                    <img src="https://bjnewlife.org/upload/book/HAVEYOUTRULYBEENBORNAGAINOFWATERANDTHESPIRIT2024L.jpg?ver=1709079147" alt="HAVE YOU TRULY BEEN BORN AGAIN OF WATER AND THE SPIRIT" />
-                  </div>
-                  <div className="book-details-mini">
-                    <span className="book-badge">Free Resource</span>
-                    <h3>{book.title || "HAVE YOU TRULY BEEN BORN AGAIN OF WATER AND THE SPIRIT"}</h3>
-                    <p>{book.description?.substring(0, 100) || "Have you truly been born again of water and the Spirit? Explore the true meaning of being born again according to the Bible."}...</p>
-                  </div>
+            <div className="hero-visual">
+              <div className="music-stack-premium">
+                <div className="stack-item item-1">
+                  <i className="fas fa-music"></i>
                 </div>
-              )}
+                <div className="stack-item item-2">
+                  <i className="fas fa-headphones"></i>
+                </div>
+                <div className="stack-item item-3">
+                  <i className="fas fa-volume-up"></i>
+                </div>
+                <div className="floating-notes">
+                  <i className="fas fa-note-sticky note-1"></i>
+                  <i className="fas fa-music note-2"></i>
+                  <i className="fas fa-microphone note-3"></i>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -231,64 +237,128 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Books Section */}
-      <section id="books" className="books-section">
-        <div className="gradient-sphere secondary"></div>
+      {/* Book Resources Section */}
+      <section id="resources" className="resources-section">
         <div className="container">
           <div className="section-header center">
-            <h2 className="section-title">
-              Free <span className="highlight">Spiritual Resources</span>
-            </h2>
-            <p className="section-subtitle">Empowering your journey with the Word of God at no cost.</p>
+            <h2 className="section-title">Free <span className="highlight">Spiritual Resources</span></h2>
+            <p className="section-subtitle">Deepen your understanding with our featured literature.</p>
           </div>
-
-          <div className="resources-container">
-            <div className="main-resource">
-              <div className="resource-card primary-card">
-                <div className="resource-visual">
-                  <div className="book-3d-wrapper">
-                    <img src="https://bjnewlife.org/upload/book/HAVEYOUTRULYBEENBORNAGAINOFWATERANDTHESPIRIT2024L.jpg?ver=1709079147" alt="HAVE YOU TRULY BEEN BORN AGAIN OF WATER AND THE SPIRIT" className="book-image" />
-                    <div className="book-spine"></div>
-                  </div>
-                </div>
-                <div className="resource-info">
-                  <span className="resource-tag">Featured Book</span>
-                  <h3>HAVE YOU TRULY BEEN BORN AGAIN OF WATER AND THE SPIRIT</h3>
-                  <p>Explore the true meaning of being born again of water and the Spirit according to the Bible.</p>
-                  <div className="resource-meta">
-                    <span className="meta-item"><i className="fas fa-file-pdf"></i> PDF Format</span>
-                    <span className="meta-item"><i className="fas fa-book-open"></i> 120+ Pages</span>
-                  </div>
-                  <div className="resource-actions">
-                    <button onClick={handleDownload} className="btn btn-primary btn-glow" disabled={loading}>
-                      {loading ? 'Sending PDF...' : 'Download Free PDF'}
-                    </button>
-                    <a href="/order" className="btn btn-outline">Request Physical Copy</a>
-                  </div>
-                </div>
+          
+          <div className="resource-featured-card glass-card">
+            <div className="resource-visual">
+              <div className="book-3d-premium">
+                <img src="https://bjnewlife.org/upload/book/HAVEYOUTRULYBEENBORNAGAINOFWATERANDTHESPIRIT2024L.jpg?ver=1709079147" alt="Featured Book" />
+                <div className="book-shadow"></div>
               </div>
             </div>
-
-            <div className="other-resources">
-              <div className="resource-card-sm coming-soon">
-                <div className="card-sm-icon"><i className="fas fa-music"></i></div>
-                <div className="card-sm-content">
-                  <h4>Sermon Audios</h4>
-                  <p>Inspiring messages to strengthen your faith.</p>
-                  <span className="status-badge">Coming Soon</span>
-                </div>
+            <div className="resource-details">
+              <span className="badge-premium">Recommended Reading</span>
+              <h3>{book?.title || "HAVE YOU TRULY BEEN BORN AGAIN OF WATER AND THE SPIRIT"}</h3>
+              <p>
+                {book?.description || "Explore the true meaning of being born again of water and the Spirit according to the Bible. This book provides clear guidance on the path to salvation."}
+              </p>
+              <div className="resource-meta-minimal">
+                <span><i className="fas fa-file-pdf"></i> PDF Format</span>
+                <span><i className="fas fa-book-open"></i> 120+ Pages</span>
               </div>
-              <div className="resource-card-sm coming-soon">
-                <div className="card-sm-icon"><i className="fas fa-book-open"></i></div>
-                <div className="card-sm-content">
-                  <h4>Study Guides</h4>
-                  <p>Deep dive into biblical truths and principles.</p>
-                  <span className="status-badge">Coming Soon</span>
-                </div>
+              <div className="resource-cta">
+                <a href="/#/order" className="btn btn-primary">
+                  <i className="fas fa-truck"></i> Request Physical Copy
+                </a>
+                <a href="/assets/English01%5B2025%5D%20(1).pdf" download className="btn btn-outline">
+                  <i className="fas fa-download"></i> Download Free PDF
+                </a>
               </div>
             </div>
           </div>
-          {message && <div className={`status-message ${messageType}`}>{message}</div>}
+        </div>
+      </section>
+
+      {/* Music Promo Section */}
+      <section id="music-promo" className="music-promo-section-v2">
+        <div className="promo-bg-elements">
+          <div className="glow-circle primary"></div>
+          <div className="glow-circle secondary"></div>
+        </div>
+        
+        <div className="container">
+          <div className="promo-layout-v2">
+            <div className="promo-content-v2">
+              <div className="promo-header-v2">
+                <span className="premium-tag">Sonic Ministry</span>
+                <h2 className="promo-title-v2">Spiritual <span className="highlight">Melodies</span></h2>
+                <p className="promo-subtitle-v2">Uplifting your soul through the power of gospel harmonies.</p>
+              </div>
+              
+              <div className="promo-features-v2">
+                <div className="promo-feature">
+                  <div className="feature-icon"><i className="fas fa-dove"></i></div>
+                  <div className="feature-text">
+                    <h4>Peaceful Worship</h4>
+                    <p>Serene melodies to calm your spirit.</p>
+                  </div>
+                </div>
+                <div className="promo-feature">
+                  <div className="feature-icon"><i className="fas fa-fire"></i></div>
+                  <div className="feature-text">
+                    <h4>High Energy</h4>
+                    <p>Contemporary beats for a joyful noise.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="genre-cloud">
+                <span className="genre-tag">Gospel</span>
+                <span className="genre-tag">Worship</span>
+                <span className="genre-tag">Trap / HipHop</span>
+                <span className="genre-tag">Reggae</span>
+                <span className="genre-tag">R&B</span>
+              </div>
+
+              <div className="promo-actions-v2">
+                <a href="/#/music" className="btn btn-primary btn-glow-premium">
+                  Explore Music Library <i className="fas fa-play"></i>
+                </a>
+              </div>
+            </div>
+
+            <div className="promo-visual-v2">
+              <div className="visual-container-premium">
+                <div className="floating-device">
+                  <div className="device-screen">
+                    <div className="screen-header">
+                      <div className="dots"><span></span><span></span><span></span></div>
+                    </div>
+                    <div className="now-playing-mock">
+                      <div className="album-art-mock">
+                        <i className="fas fa-music"></i>
+                        <div className="wave-bars">
+                          <span></span><span></span><span></span><span></span>
+                        </div>
+                      </div>
+                      <div className="song-info-mock">
+                        <div className="mock-line-lg"></div>
+                        <div className="mock-line-sm"></div>
+                      </div>
+                      <div className="controls-mock">
+                        <i className="fas fa-step-backward"></i>
+                        <i className="fas fa-play-circle"></i>
+                        <i className="fas fa-step-forward"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="device-shadow"></div>
+                </div>
+                <div className="decorative-elements">
+                  <div className="blob-element"></div>
+                  <i className="fas fa-star spark-1"></i>
+                  <i className="fas fa-star spark-2"></i>
+                  <i className="fas fa-circle spark-3"></i>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </div>

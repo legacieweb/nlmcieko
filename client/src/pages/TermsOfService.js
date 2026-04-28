@@ -27,6 +27,11 @@ function TermsOfService() {
                 All free Christian books, sermon audios, and study guides provided by NLM Cieko are for personal spiritual growth and non-commercial educational purposes. You may not sell or redistribute these materials for profit.
               </p>
 
+              <h2 style={{ color: 'white', marginBottom: '1.5rem' }}>Music Usage & Licensing</h2>
+              <p style={{ marginBottom: '2rem' }}>
+                All music tracks and audio content available on NLM Cieko are for streaming and personal spiritual enrichment. While some tracks may offer a download option for offline listening, these files remain the intellectual property of NLM Cieko. You may not use this music for commercial projects, background audio in public broadcasts, or redistribute it on other platforms without explicit written consent.
+              </p>
+
               <h2 style={{ color: 'white', marginBottom: '1.5rem' }}>Intellectual Property</h2>
               <p style={{ marginBottom: '2rem' }}>
                 The content on this website, including text, graphics, logos, and digital downloads, is the property of NLM Cieko and protected by intellectual property laws. Reproduction without permission is prohibited.

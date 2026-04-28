@@ -1,11 +1,24 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useMusic } from '../context/MusicContext';
+import PremiumLoader from '../components/PremiumLoader';
 import './AdminPage.css';
 
 function AdminPage() {
+  const { tab } = useParams();
+  const navigate = useNavigate();
   const { showToast } = useMusic();
-  const [activeTab, setActiveTab] = useState('analytics');
+  const [activeTab, setActiveTab] = useState(tab || 'analytics');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    if (tab) {
+      setActiveTab(tab);
+    } else {
+      setActiveTab('analytics');
+    }
+  }, [tab]);
   const [analytics, setAnalytics] = useState(null);
   const [orders, setOrders] = useState([]);
   const [beliefs, setBeliefs] = useState([]);
@@ -392,66 +405,118 @@ function AdminPage() {
           </div>
         ) : (
           <>
-            <aside className="admin-sidebar">
+            <div className="admin-mobile-nav">
+              <button className="mobile-toggle" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+                <i className={`fas ${isSidebarOpen ? 'fa-times' : 'fa-bars'}`}></i>
+              </button>
+              <div className="mobile-brand">Admin Panel</div>
+            </div>
+
+            <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : ''}`}>
               <h2>Admin Panel</h2>
               <nav>
-                <button className={activeTab === 'analytics' ? 'active' : ''} onClick={() => setActiveTab('analytics')}>Analytics</button>
-                <button className={activeTab === 'orders' ? 'active' : ''} onClick={() => setActiveTab('orders')}>Orders</button>
-                <button className={activeTab === 'beliefs' ? 'active' : ''} onClick={() => setActiveTab('beliefs')}>Belief Data</button>
-                <button className={activeTab === 'songs' ? 'active' : ''} onClick={() => setActiveTab('songs')}>Manage Songs</button>
-                <button className={activeTab === 'users' ? 'active' : ''} onClick={() => setActiveTab('users')}>Users</button>
-                <button className={activeTab === 'servant-pages' ? 'active' : ''} onClick={() => setActiveTab('servant-pages')}>Servant Pages</button>
-                <button className={activeTab === 'contacts' ? 'active' : ''} onClick={() => setActiveTab('contacts')}>Contacts</button>
+                <button 
+                  className={activeTab === 'analytics' ? 'active' : ''} 
+                  onClick={() => { navigate('/admin/analytics'); setIsSidebarOpen(false); }}
+                >
+                  <i className="fas fa-chart-line"></i> Analytics
+                </button>
+                <button 
+                  className={activeTab === 'orders' ? 'active' : ''} 
+                  onClick={() => { navigate('/admin/orders'); setIsSidebarOpen(false); }}
+                >
+                  <i className="fas fa-shopping-cart"></i> Orders
+                </button>
+                <button 
+                  className={activeTab === 'beliefs' ? 'active' : ''} 
+                  onClick={() => { navigate('/admin/beliefs'); setIsSidebarOpen(false); }}
+                >
+                  <i className="fas fa-pray"></i> Belief Data
+                </button>
+                <button 
+                  className={activeTab === 'songs' ? 'active' : ''} 
+                  onClick={() => { navigate('/admin/songs'); setIsSidebarOpen(false); }}
+                >
+                  <i className="fas fa-music"></i> Manage Songs
+                </button>
+                <button 
+                  className={activeTab === 'users' ? 'active' : ''} 
+                  onClick={() => { navigate('/admin/users'); setIsSidebarOpen(false); }}
+                >
+                  <i className="fas fa-users-cog"></i> Users
+                </button>
+                <button 
+                  className={activeTab === 'servant-pages' ? 'active' : ''} 
+                  onClick={() => { navigate('/admin/servant-pages'); setIsSidebarOpen(false); }}
+                >
+                  <i className="fas fa-file-alt"></i> Servant Pages
+                </button>
+                <button 
+                  className={activeTab === 'contacts' ? 'active' : ''} 
+                  onClick={() => { navigate('/admin/contacts'); setIsSidebarOpen(false); }}
+                >
+                  <i className="fas fa-envelope"></i> Contacts
+                </button>
+                <div className="sidebar-divider"></div>
+                <button className="back-site-btn" onClick={() => navigate('/')}>
+                  <i className="fas fa-arrow-left"></i> Main Site
+                </button>
               </nav>
             </aside>
 
-            <main className="admin-content">
+            <main className="admin-main-content">
               {statusMessage && (
                 <div className={`admin-status-message ${statusMessage.type}`}>
                   {statusMessage.text}
                 </div>
               )}
               {loading ? (
-                <div className="loader">Loading...</div>
+                <PremiumLoader message="Harmonizing spiritual data..." />
               ) : (
                 <>
                   {/* SONGS TAB */}
                   {activeTab === 'songs' && (
-                    <div className="songs-manager">
-                      <div className="songs-header">
-                        <h1>Manage Songs</h1>
-                        <button className="add-song-btn" onClick={() => setShowAddForm(true)}>+ Add Song</button>
-                      </div>
+                    <div className="songs-manager section-fade-in">
+                      <header className="section-header">
+                        <div className="header-text">
+                          <h1>Music Library</h1>
+                          <p>Manage and curate spiritual melodies</p>
+                        </div>
+                        <button className="add-btn-premium" onClick={() => setShowAddForm(true)}>
+                          <i className="fas fa-plus"></i> Add New Song
+                        </button>
+                      </header>
 
                       {/* Add/Edit Form */}
                       {showAddForm && (
-                        <div className="song-form-container">
-                          <h2>{selectedSong ? 'Edit Song' : 'Add New Song'}</h2>
-                          <form onSubmit={selectedSong ? handleUpdate : handleSubmit}>
-                            <div className="form-row">
-                              <div className="form-group">
-                                <label>Title *</label>
+                        <div className="song-form-container glass-card">
+                          <div className="form-header-premium">
+                             <h2><i className={`fas ${selectedSong ? 'fa-edit' : 'fa-plus-circle'}`}></i> {selectedSong ? 'Edit Masterpiece' : 'New Creation'}</h2>
+                             <button className="close-form-btn" onClick={cancelForm}><i className="fas fa-times"></i></button>
+                          </div>
+                          <form onSubmit={selectedSong ? handleUpdate : handleSubmit} className="premium-form">
+                            <div className="form-grid-premium">
+                              <div className="form-group-premium">
+                                <label><i className="fas fa-heading"></i> Title</label>
                                 <input 
                                   type="text" 
                                   value={formData.title}
                                   onChange={(e) => setFormData({...formData, title: e.target.value})}
                                   required
-                                  placeholder="Song title"
+                                  placeholder="What is the name of this melody?"
                                 />
                               </div>
-                              <div className="form-group">
-                                <label>Artist</label>
+                              <div className="form-group-premium">
+                                <label><i className="fas fa-user-tie"></i> Artist</label>
                                 <input 
                                   type="text" 
                                   value={formData.artist}
                                   onChange={(e) => setFormData({...formData, artist: e.target.value})}
-                                  placeholder="Artist name"
+                                  placeholder="Who is the vessel?"
                                 />
                               </div>
-                            </div>
-                            <div className="form-row">
-                              <div className="form-group">
-                                <label>Genre *</label>
+                              <div className="form-group-premium">
+                                <label><i className="fas fa-tags"></i> Genre</label>
                                 <select 
                                   value={formData.genre}
                                   onChange={(e) => setFormData({...formData, genre: e.target.value})}
@@ -462,58 +527,50 @@ function AdminPage() {
                                   <option value="worship">Worship</option>
                                 </select>
                               </div>
-                              <div className="form-group">
-                                <label>Audio File (mp3, wav, ogg)</label>
-                                {selectedSong && !selectedFile && (
-                                  <p className="current-file-text">Currently: {formData.audioUrl.split('/').pop()}</p>
-                                )}
-                                <input 
-                                  type="file" 
-                                  accept=".mp3,.wav,.ogg,.m4a,.aac"
-                                  onChange={(e) => {
-                                    const file = e.target.files[0];
-                                    setSelectedFile(file);
-                                    if (file) {
-                                      setFormData({...formData, audioUrl: file.name});
-                                    }
-                                  }}
-                                  className="file-input"
-                                />
-                                <p className="small-text">Or enter a URL/path below</p>
+                              <div className="form-group-premium">
+                                <label><i className="fas fa-file-audio"></i> Audio Source</label>
+                                <div className="file-upload-custom">
+                                   <input 
+                                     type="file" 
+                                     id="audio-upload"
+                                     accept=".mp3,.wav,.ogg,.m4a,.aac"
+                                     onChange={(e) => {
+                                       const file = e.target.files[0];
+                                       setSelectedFile(file);
+                                       if (file) setFormData({...formData, audioUrl: file.name});
+                                     }}
+                                   />
+                                   <label htmlFor="audio-upload" className="upload-btn">
+                                      <i className="fas fa-cloud-upload-alt"></i> {selectedFile ? selectedFile.name : (selectedSong ? 'Change Audio File' : 'Upload Audio')}
+                                   </label>
+                                </div>
                               </div>
                             </div>
-                            <div className="form-group">
-                              <label>Thumbnail URL or Path (Image URL for the song)</label>
+                            
+                            <div className="form-group-premium full-width">
+                              <label><i className="fas fa-image"></i> Thumbnail URL</label>
                               <input 
                                 type="text" 
                                 value={formData.thumbnailUrl}
                                 onChange={(e) => setFormData({...formData, thumbnailUrl: e.target.value})}
-                                placeholder="https://example.com/image.jpg"
+                                placeholder="https://example.com/cover-art.jpg"
                               />
                             </div>
-                            <div className="form-group">
-                              <label>Audio URL or Path (if not uploading file)</label>
-                              <input 
-                                type="text" 
-                                value={formData.audioUrl}
-                                onChange={(e) => setFormData({...formData, audioUrl: e.target.value})}
-                                placeholder="https://example.com/song.mp3"
-                                disabled={!!selectedFile}
-                              />
-                            </div>
-                            <div className="form-group">
-                              <label>Lyrics</label>
+
+                            <div className="form-group-premium full-width">
+                              <label><i className="fas fa-align-left"></i> Lyrics / Message</label>
                               <textarea 
                                 value={formData.lyrics}
                                 onChange={(e) => setFormData({...formData, lyrics: e.target.value})}
-                                placeholder="Enter song lyrics here..."
-                                rows="8"
+                                placeholder="Let the words flow here..."
+                                rows="6"
                               ></textarea>
                             </div>
-                            <div className="form-actions">
-                              <button type="button" className="cancel-btn" onClick={cancelForm}>Cancel</button>
-                              <button type="submit" className="save-btn" disabled={saving}>
-                                {saving ? 'Saving...' : (selectedSong ? 'Update Song' : 'Add Song')}
+
+                            <div className="form-actions-premium">
+                              <button type="button" className="btn-secondary-premium" onClick={cancelForm}>Dismiss</button>
+                              <button type="submit" className="btn-primary-premium" disabled={saving}>
+                                {saving ? <><i className="fas fa-spinner fa-spin"></i> Saving...</> : (selectedSong ? 'Update Melody' : 'Publish Song')}
                               </button>
                             </div>
                           </form>
@@ -521,49 +578,47 @@ function AdminPage() {
                       )}
 
                       {/* Songs List */}
-                      <div className="songs-list">
+                      <div className="songs-list-modern">
                         {songs.length > 0 ? (
-                          <table>
-                            <thead>
-                              <tr>
-                                <th>Title</th>
-                                <th>Artist</th>
-                                <th>Genre</th>
-                                <th>Lyrics</th>
-                                <th>Actions</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {songs.map(song => (
-                                <tr key={song.id}>
-                                  <td className="song-title-cell">{song.title}</td>
-                                  <td>{song.artist}</td>
-                                  <td>
-                                    <span className="genre-tag" style={{ background: genreColors[song.genre] }}>
-                                      {song.genre}
-                                    </span>
-                                  </td>
-                                  <td>{song.lyrics ? <i className="fas fa-check"></i> : <i className="fas fa-minus"></i>}</td>
-                                  <td>
-                                    <div className="action-btns">
-                                      <button className="edit-btn" onClick={() => handleEdit(song)}>Edit</button>
+                          <div className="song-cards-grid">
+                            {songs.map(song => (
+                              <div key={song.id} className="admin-song-card glass-card">
+                                <div className="song-card-artwork">
+                                  {song.thumbnail_url ? <img src={song.thumbnail_url} alt="" /> : <div className="artwork-placeholder"><i className="fas fa-music"></i></div>}
+                                  <div className="song-card-overlay">
+                                     <button className="play-btn-mini"><i className="fas fa-play"></i></button>
+                                  </div>
+                                </div>
+                                <div className="song-card-info">
+                                  <span className="song-genre-badge" style={{ background: genreColors[song.genre] }}>{song.genre}</span>
+                                  <h3>{song.title}</h3>
+                                  <p>{song.artist}</p>
+                                  <div className="song-card-footer">
+                                    <div className="song-meta-icons">
+                                      {song.lyrics && <i className="fas fa-quote-right" title="Has Lyrics"></i>}
+                                      <i className="fas fa-clock"></i>
+                                    </div>
+                                    <div className="song-actions-premium">
+                                      <button className="action-btn edit" onClick={() => handleEdit(song)}><i className="fas fa-pen"></i></button>
                                       {deletingId === song.id ? (
-                                        <div className="confirm-delete">
-                                          <button className="confirm-btn" onClick={() => handleDelete(song.id)}>Confirm?</button>
-                                          <button className="cancel-btn-sm" onClick={() => setDeletingId(null)}>X</button>
+                                        <div className="confirm-bubble">
+                                          <button className="confirm-check" onClick={() => handleDelete(song.id)}><i className="fas fa-check"></i></button>
+                                          <button className="confirm-cancel" onClick={() => setDeletingId(null)}><i className="fas fa-times"></i></button>
                                         </div>
                                       ) : (
-                                        <button className="delete-btn" onClick={() => setDeletingId(song.id)}>Delete</button>
+                                        <button className="action-btn delete" onClick={() => setDeletingId(song.id)}><i className="fas fa-trash"></i></button>
                                       )}
                                     </div>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
                         ) : (
-                          <div className="no-songs-msg">
-                            <p>No songs added yet. Click "Add Song" to get started.</p>
+                          <div className="no-items-placeholder glass-card">
+                            <i className="fas fa-music-slash"></i>
+                            <p>The library is quiet. Start by adding a spiritual melody.</p>
+                            <button className="add-btn-premium" onClick={() => setShowAddForm(true)}>Add Your First Song</button>
                           </div>
                         )}
                       </div>
@@ -572,151 +627,242 @@ function AdminPage() {
 
                   {/* ANALYTICS TAB */}
                   {activeTab === 'analytics' && analytics && (
-                    <div className="analytics-view">
-                      <h1>System Analytics</h1>
+                    <div className="analytics-view section-fade-in">
+                      <header className="section-header">
+                        <div className="header-text">
+                          <h1>System Analytics</h1>
+                          <p>Monitor platform growth and user engagement</p>
+                        </div>
+                        <div className="header-icon-glow">
+                          <i className="fas fa-chart-line"></i>
+                        </div>
+                      </header>
+
                       <div className="stats-grid">
-                        <div className="stat-card">
-                          <h3>Total Orders</h3>
-                          <p>{analytics.totalOrders}</p>
-                        </div>
-                        <div className="stat-card">
-                          <h3>Total Songs</h3>
-                          <p>{analytics.totalSongs || 0}</p>
-                        </div>
-                        <div className="stat-card">
-                          <h3>Avg Bible Belief</h3>
-                          <p>{parseFloat(analytics.averageBelief).toFixed(1)}%</p>
-                        </div>
-                      </div>
-                      <div className="chart-mockup">
-                        <h3>Belief Distribution</h3>
-                        {analytics.beliefDistribution.map(item => (
-                          <div key={item.range} className="chart-row">
-                            <span>{item.range}</span>
-                            <div className="bar-bg">
-                              <div className="bar-fill" style={{width: `${(item.count / 10) * 100}%`}}></div>
-                            </div>
-                            <span>{item.count} users</span>
+                        <div className="stat-card premium-card">
+                          <div className="stat-icon-box orders-glow">
+                             <i className="fas fa-shopping-bag"></i>
                           </div>
-                        ))}
+                          <div className="stat-content">
+                            <h3>Total Orders</h3>
+                            <p>{analytics.totalOrders}</p>
+                            <span className="stat-trend positive"><i className="fas fa-arrow-up"></i> 12% increase</span>
+                          </div>
+                        </div>
+
+                        <div className="stat-card premium-card">
+                          <div className="stat-icon-box songs-glow">
+                             <i className="fas fa-music"></i>
+                          </div>
+                          <div className="stat-content">
+                            <h3>Total Songs</h3>
+                            <p>{analytics.totalSongs || 0}</p>
+                            <span className="stat-trend"><i className="fas fa-compact-disc"></i> Full Library</span>
+                          </div>
+                        </div>
+
+                        <div className="stat-card premium-card">
+                          <div className="stat-icon-box belief-glow">
+                             <i className="fas fa-pray"></i>
+                          </div>
+                          <div className="stat-content">
+                            <h3>Avg Bible Belief</h3>
+                            <p>{parseFloat(analytics.averageBelief).toFixed(1)}%</p>
+                            <span className="stat-trend neutral">Spiritual Maturity</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="chart-mockup glass-card">
+                        <div className="card-header-flex">
+                          <h3><i className="fas fa-project-diagram"></i> Belief Distribution</h3>
+                          <span className="tag-pill">User Insights</span>
+                        </div>
+                        <div className="chart-container">
+                          {analytics.beliefDistribution.map(item => (
+                            <div key={item.range} className="chart-row-modern">
+                              <span className="range-label">{item.range}</span>
+                              <div className="progress-bar-wrapper">
+                                <div className="bar-bg-modern">
+                                  <div className="bar-fill-modern" style={{width: `${(item.count / 10) * 100}%`}}>
+                                    <div className="bar-glow"></div>
+                                  </div>
+                                </div>
+                              </div>
+                              <span className="count-label">{item.count} users</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   )}
 
+                  {/* ORDERS TAB */}
                   {activeTab === 'orders' && (
-                    <div className="table-view">
-                      <h1>Customer Orders</h1>
-                      <table>
-                        <thead>
-                          <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Book</th>
-                            <th>Phone</th>
-                            <th>Status</th>
-                            <th>Date</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {orders.map(order => (
-                            <tr key={order.id}>
-                              <td>#{order.id}</td>
-                              <td>{order.full_name}</td>
-                              <td>{order.book_title}</td>
-                              <td>{order.phone}</td>
-                              <td><span className={`status-pill ${order.status}`}>{order.status}</span></td>
-                              <td>{new Date(order.created_at).toLocaleDateString()}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
+                    <div className="orders-view section-fade-in">
+                      <header className="section-header">
+                        <div className="header-text">
+                          <h1>Customer Orders</h1>
+                          <p>Track and fulfill spiritual resource requests</p>
+                        </div>
+                        <div className="header-icon-glow">
+                          <i className="fas fa-shopping-cart"></i>
+                        </div>
+                      </header>
 
-                  {activeTab === 'beliefs' && (
-                    <div className="table-view">
-                      <h1>Belief Submissions</h1>
-                      <table>
-                        <thead>
-                          <tr>
-                            <th>User</th>
-                            <th>Email</th>
-                            <th>Percentage</th>
-                            <th>Date</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {beliefs.map(b => (
-                            <tr key={b.id}>
-                              <td>{b.full_name || 'Anonymous'}</td>
-                              <td>{b.email}</td>
-                              <td><strong>{b.percentage}%</strong></td>
-                              <td>{new Date(b.created_at).toLocaleString()}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-
-                  {activeTab === 'users' && (
-                    <div className="users-manager">
-                      <div className="songs-header">
-                        <h1>User Management</h1>
-                      </div>
-                      <div className="table-view">
-                        <table>
+                      <div className="table-view-premium glass-card">
+                        <table className="premium-table">
                           <thead>
                             <tr>
-                              <th>Name</th>
-                              <th>Email</th>
-                              <th>Role</th>
-                              <th>Assigned Page</th>
+                              <th>Order ID</th>
+                              <th>Recipient</th>
+                              <th>Resource</th>
+                              <th>Contact</th>
+                              <th>Status</th>
+                              <th>Timeline</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {orders.map(order => (
+                              <tr key={order.id}>
+                                <td><span className="order-number">#{order.id}</span></td>
+                                <td className="user-identity-cell">
+                                   <div className="user-avatar-mini">{order.full_name?.charAt(0)}</div>
+                                   <span className="user-name-bold">{order.full_name}</span>
+                                </td>
+                                <td><span className="book-title-tag">{order.book_title}</span></td>
+                                <td><span className="phone-link"><i className="fas fa-phone-alt"></i> {order.phone}</span></td>
+                                <td><span className={`premium-status-badge ${order.status}`}>{order.status}</span></td>
+                                <td><span className="date-dim">{new Date(order.created_at).toLocaleDateString()}</span></td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* BELIEFS TAB */}
+                  {activeTab === 'beliefs' && (
+                    <div className="beliefs-view section-fade-in">
+                      <header className="section-header">
+                        <div className="header-text">
+                          <h1>Belief Submissions</h1>
+                          <p>Analyze spiritual maturity levels across the community</p>
+                        </div>
+                        <div className="header-icon-glow">
+                          <i className="fas fa-pray"></i>
+                        </div>
+                      </header>
+
+                      <div className="table-view-premium glass-card">
+                        <table className="premium-table">
+                          <thead>
+                            <tr>
+                              <th>Soul</th>
+                              <th>Email Identity</th>
+                              <th>Maturity Level</th>
+                              <th>Submission Date</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {beliefs.map(b => (
+                              <tr key={b.id}>
+                                <td className="user-identity-cell">
+                                   <div className="user-avatar-mini">{b.full_name?.charAt(0) || 'A'}</div>
+                                   <span className="user-name-bold">{b.full_name || 'Anonymous'}</span>
+                                </td>
+                                <td><span className="user-email-dim">{b.email}</span></td>
+                                <td>
+                                   <div className="maturity-meter">
+                                      <div className="maturity-fill" style={{ width: `${b.percentage}%` }}></div>
+                                      <span className="maturity-text">{b.percentage}%</span>
+                                   </div>
+                                </td>
+                                <td><span className="date-dim">{new Date(b.created_at).toLocaleString()}</span></td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* USERS TAB */}
+                  {activeTab === 'users' && (
+                    <div className="users-manager section-fade-in">
+                      <header className="section-header">
+                        <div className="header-text">
+                          <h1>User Management</h1>
+                          <p>Assign roles and manage ministry access</p>
+                        </div>
+                        <div className="header-icon-glow">
+                          <i className="fas fa-users-cog"></i>
+                        </div>
+                      </header>
+
+                      <div className="table-view-premium glass-card">
+                        <table className="premium-table">
+                          <thead>
+                            <tr>
+                              <th>Identity</th>
+                              <th>Role & Access</th>
+                              <th>Assigned Webpage</th>
                               <th>Actions</th>
                             </tr>
                           </thead>
                           <tbody>
                             {users.map(u => (
                               <tr key={u.id}>
-                                <td>{u.full_name}</td>
-                                <td>{u.email}</td>
-                                <td>
-                                  {u.is_admin ? <span className="status-pill completed">Admin</span> : (
-                                    u.is_servant ? <span className="status-pill in_progress">Servant</span> : <span className="status-pill pending">User</span>
-                                  )}
+                                <td className="user-identity-cell">
+                                  <div className="user-avatar-mini">
+                                    {u.full_name?.charAt(0)}
+                                  </div>
+                                  <div className="user-info-text">
+                                    <span className="user-name-bold">{u.full_name}</span>
+                                    <span className="user-email-dim">{u.email}</span>
+                                  </div>
                                 </td>
                                 <td>
-                                  <select 
-                                    className="admin-page-assign-select"
-                                    value={u.assigned_page_id || ''} 
-                                    onChange={(e) => handleAssignPage(u.id, e.target.value)}
-                                    disabled={!u.is_servant}
-                                  >
-                                    <option value="">No Page</option>
-                                    {servantPages.map(p => (
-                                      <option key={p.id} value={p.id}>{p.title}</option>
-                                    ))}
-                                  </select>
+                                  <div className="role-badge-container">
+                                    {u.is_admin ? <span className="premium-badge admin">Administrator</span> : (
+                                      u.is_servant ? <span className="premium-badge servant">Ministry Servant</span> : <span className="premium-badge user">Regular User</span>
+                                    )}
+                                  </div>
                                 </td>
                                 <td>
-                                  <div className="action-btns" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                  <div className="assign-page-wrapper">
+                                    <select 
+                                      className="premium-select-sm"
+                                      value={u.assigned_page_id || ''} 
+                                      onChange={(e) => handleAssignPage(u.id, e.target.value)}
+                                      disabled={!u.is_servant}
+                                    >
+                                      <option value="">No Page Assigned</option>
+                                      {servantPages.map(p => (
+                                        <option key={p.id} value={p.id}>{p.title}</option>
+                                      ))}
+                                    </select>
+                                  </div>
+                                </td>
+                                <td>
+                                  <div className="premium-action-group">
                                     {!u.is_admin && (
                                       <button 
-                                        className={u.is_servant ? "delete-btn" : "add-song-btn"}
+                                        className={`btn-action-premium ${u.is_servant ? 'demote' : 'promote'}`}
                                         onClick={() => handlePromote(u.id, !u.is_servant)}
-                                        style={{ padding: '6px 10px', fontSize: '11px', width: 'auto', margin: 0 }}
+                                        title={u.is_servant ? 'Demote to User' : 'Promote to Servant'}
                                       >
-                                        {u.is_servant ? 'Demote' : 'Promote'}
+                                        <i className={`fas ${u.is_servant ? 'fa-user-minus' : 'fa-user-plus'}`}></i>
                                       </button>
                                     )}
                                     {u.is_servant && (
                                       <button 
-                                        className="cancel-btn-sm"
+                                        className="btn-action-premium reset"
                                         onClick={() => handleResetPage(u.id)}
-                                        style={{ padding: '6px 10px', fontSize: '11px', width: 'auto', margin: 0, background: '#64748b' }}
-                                        title="Reset servant page to default"
+                                        title="Reset Servant Page"
                                       >
-                                        Reset Page
+                                        <i className="fas fa-undo"></i>
                                       </button>
                                     )}
                                   </div>
@@ -729,94 +875,122 @@ function AdminPage() {
                     </div>
                   )}
 
+                  {/* SERVANT PAGES TAB */}
                   {activeTab === 'servant-pages' && (
-                    <div className="servant-pages-manager">
-                      <div className="songs-header">
-                        <h1>Servant Webpages</h1>
-                        <button className="add-song-btn" onClick={() => setShowPageForm(true)}>+ Create Page</button>
-                      </div>
+                    <div className="servant-pages-manager section-fade-in">
+                      <header className="section-header">
+                        <div className="header-text">
+                          <h1>Ministry Webpages</h1>
+                          <p>Templates and pre-configured gospel layouts</p>
+                        </div>
+                        <button className="add-btn-premium" onClick={() => setShowPageForm(true)}>
+                          <i className="fas fa-file-medical"></i> Create Template
+                        </button>
+                      </header>
 
                       {showPageForm && (
-                        <div className="song-form-container">
-                          <h2>Create New Webpage</h2>
-                          <form onSubmit={handlePageSubmit}>
-                            <div className="form-group">
-                              <label>Page Title</label>
+                        <div className="song-form-container glass-card">
+                          <div className="form-header-premium">
+                             <h2><i className="fas fa-magic"></i> New Webpage Template</h2>
+                             <button className="close-form-btn" onClick={() => setShowPageForm(false)}><i className="fas fa-times"></i></button>
+                          </div>
+                          <form onSubmit={handlePageSubmit} className="premium-form">
+                            <div className="form-group-premium full-width">
+                              <label><i className="fas fa-pen-nib"></i> Template Title</label>
                               <input 
                                 type="text" 
-                                value={pageFormData.title}
+                                value={pageFormData.title} 
                                 onChange={(e) => setPageFormData({...pageFormData, title: e.target.value})}
                                 required
-                                placeholder="e.g. Gospel Outreach"
+                                placeholder="e.g. Youth Ministry Layout"
                               />
                             </div>
-                            <div className="form-group">
-                              <label>Initial Content (Markdown/HTML supported)</label>
+                            <div className="form-group-premium full-width">
+                              <label><i className="fas fa-code"></i> Content Blueprint (HTML/Markdown)</label>
                               <textarea 
                                 value={pageFormData.content}
                                 onChange={(e) => setPageFormData({...pageFormData, content: e.target.value})}
                                 required
-                                placeholder="Enter page content here..."
-                                rows="10"
-                                style={{ width: '100%', background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid var(--glass-border)', padding: '10px' }}
+                                placeholder="Structure the spiritual message here..."
+                                rows="12"
                               ></textarea>
                             </div>
-                            <div className="form-actions">
-                              <button type="button" className="cancel-btn" onClick={() => setShowPageForm(false)}>Cancel</button>
-                              <button type="submit" className="save-btn" disabled={saving}>
-                                {saving ? 'Creating...' : 'Create Page'}
+                            <div className="form-actions-premium">
+                              <button type="button" className="btn-secondary-premium" onClick={() => setShowPageForm(false)}>Discard</button>
+                              <button type="submit" className="btn-primary-premium" disabled={saving}>
+                                {saving ? <><i className="fas fa-spinner fa-spin"></i> Creating...</> : 'Launch Template'}
                               </button>
                             </div>
                           </form>
                         </div>
                       )}
 
-                      <div className="table-view">
-                        <table>
-                          <thead>
-                            <tr>
-                              <th>ID</th>
-                              <th>Title</th>
-                              <th>Created At</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {servantPages.map(p => (
-                              <tr key={p.id}>
-                                <td>#{p.id}</td>
-                                <td>{p.title}</td>
-                                <td>{new Date(p.created_at).toLocaleDateString()}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                      <div className="servant-pages-grid">
+                        {servantPages.map(p => (
+                          <div key={p.id} className="page-template-card glass-card">
+                             <div className="template-visual">
+                                <i className="fas fa-file-alt"></i>
+                                <span className="template-id">#{p.id}</span>
+                             </div>
+                             <div className="template-info">
+                                <h3>{p.title}</h3>
+                                <p><i className="fas fa-calendar-alt"></i> Created {new Date(p.created_at).toLocaleDateString()}</p>
+                                <div className="template-footer">
+                                   <span className="usage-tag">System Template</span>
+                                   <button className="preview-link-btn">Preview <i className="fas fa-external-link-alt"></i></button>
+                                </div>
+                             </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   )}
 
                   {activeTab === 'contacts' && (
-                    <div className="table-view">
-                      <h1>Contact Messages</h1>
-                      <table>
-                        <thead>
-                          <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Subject</th>
-                            <th>Date</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {contacts.map(c => (
-                            <tr key={c.id}>
-                              <td>{c.name}</td>
-                              <td>{c.email}</td>
-                              <td>{c.subject}</td>
-                              <td>{new Date(c.created_at).toLocaleDateString()}</td>
+                    <div className="contacts-view section-fade-in">
+                      <header className="section-header">
+                        <div className="header-text">
+                          <h1>Contact Messages</h1>
+                          <p>Respond to general inquiries and community feedback</p>
+                        </div>
+                        <div className="header-icon-glow">
+                          <i className="fas fa-envelope"></i>
+                        </div>
+                      </header>
+
+                      <div className="table-view-premium glass-card">
+                        <table className="premium-table">
+                          <thead>
+                            <tr>
+                              <th>Sender</th>
+                              <th>Subject & Content</th>
+                              <th>Timeline</th>
+                              <th>Actions</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody>
+                            {contacts.map(c => (
+                              <tr key={c.id}>
+                                <td className="user-identity-cell">
+                                   <div className="user-avatar-mini">{c.name?.charAt(0)}</div>
+                                   <div className="user-info-text">
+                                      <span className="user-name-bold">{c.name}</span>
+                                      <span className="user-email-dim">{c.email}</span>
+                                   </div>
+                                </td>
+                                <td>
+                                   <div className="subject-line"><strong>{c.subject}</strong></div>
+                                   <div className="content-preview">{c.message?.substring(0, 60)}...</div>
+                                </td>
+                                <td><span className="date-dim">{new Date(c.created_at).toLocaleDateString()}</span></td>
+                                <td>
+                                   <button className="btn-action-premium promote" title="View & Reply"><i className="fas fa-reply"></i></button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   )}
                 </>

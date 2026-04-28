@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import { Helmet } from 'react-helmet-async';
 import './OrderPage.css';
 
 function OrderPage() {
@@ -18,7 +19,6 @@ function OrderPage() {
     notes: '',
   });
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [orderSuccess, setOrderSuccess] = useState(false);
 
@@ -36,10 +36,10 @@ function OrderPage() {
 
     setFormData((prev) => ({
       ...prev,
-      fullName: user.fullName,
-      phone: user.phone,
-      county: user.county,
-      town: user.town,
+      fullName: user.fullName || '',
+      phone: user.phone || '',
+      county: user.county || '',
+      town: user.town || '',
     }));
 
     fetchCounties();
@@ -65,7 +65,6 @@ function OrderPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setMessage('');
 
     if (
       !formData.fullName ||
@@ -81,245 +80,220 @@ function OrderPage() {
 
     setLoading(true);
     try {
-      const response = await api.post('/orders', formData);
-
+      await api.post('/orders', formData);
       setOrderSuccess(true);
-      setMessage('Order placed successfully! Check your email for confirmation.');
       setTimeout(() => {
         navigate('/order-history');
-      }, 3000);
+      }, 4000);
     } catch (error) {
-      setError(error.response?.data?.message || 'Error placing order');
+      setError(error.response?.data?.message || 'Error placing order. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   return (
-    <div className="order-page">
-      <div className="order-hero">
-        <div className="order-hero-content">
-          <h1>Get Your Free Christian Book</h1>
-          <p>Complete your order and receive the Word of God delivered right to your doorstep in Kenya</p>
-        </div>
+    <div className="premium-order-page">
+      <Helmet>
+        <title>Request Free Book | NLM Cieko</title>
+        <meta name="description" content="Order your free physical copy of our featured Christian literature. Delivered straight to your doorstep in Kenya." />
+      </Helmet>
+
+      <div className="order-bg-visuals">
+        <div className="glow-sphere primary"></div>
+        <div className="glow-sphere secondary"></div>
       </div>
 
       <div className="container">
-        <div className="order-container">
-          <div className="order-main">
-            <div className="order-card">
-              {orderSuccess ? (
-                <div className="success-message">
-                  <div className="success-icon"><i className="fas fa-check-circle"></i></div>
-                  <h2>Order Placed Successfully!</h2>
-                  <p>Thank you for ordering the Word of God Christian Book.</p>
-                  <p>A confirmation email has been sent to <strong>{user.email}</strong></p>
-                  <p>We'll process your order and send you a tracking number soon.</p>
-                  <div className="success-details">
-                    <p><strong>Delivery Location:</strong> {formData.town}, {formData.county}</p>
-                    <p><strong>Quantity:</strong> {formData.quantity} book(s)</p>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <div className="order-header">
-                    <h2>Order Your Free Book</h2>
-                    <p>Fill in your details below. No payment required—completely free!</p>
-                  </div>
-
-                  <form onSubmit={handleSubmit} className="order-form">
-                    <fieldset>
-                      <legend>Personal Information</legend>
-                      
-                      <div className="form-row">
-                        <div className="form-group">
-                          <label htmlFor="fullName">Full Name *</label>
-                          <input
-                            type="text"
-                            id="fullName"
-                            name="fullName"
-                            value={formData.fullName}
-                            onChange={handleChange}
-                            placeholder="Enter your full name"
-                            required
-                          />
-                        </div>
-
-                        <div className="form-group">
-                          <label htmlFor="phone">Phone Number *</label>
-                          <input
-                            type="tel"
-                            id="phone"
-                            name="phone"
-                            value={formData.phone}
-                            onChange={handleChange}
-                            placeholder="Enter your phone number"
-                            required
-                          />
-                        </div>
-                      </div>
-                    </fieldset>
-
-                    <fieldset>
-                      <legend>Delivery Address (Kenya Only)</legend>
-
-                      <div className="form-row">
-                        <div className="form-group">
-                          <label htmlFor="county">County *</label>
-                          <select
-                            id="county"
-                            name="county"
-                            value={formData.county}
-                            onChange={handleChange}
-                            required
-                          >
-                            <option value="">Select your county</option>
-                            {counties.map((county) => (
-                              <option key={county} value={county}>
-                                {county}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-
-                        <div className="form-group">
-                          <label htmlFor="town">Town/City *</label>
-                          <input
-                            type="text"
-                            id="town"
-                            name="town"
-                            value={formData.town}
-                            onChange={handleChange}
-                            placeholder="Enter your town/city"
-                            required
-                          />
-                        </div>
-                      </div>
-
-                      <div className="form-group">
-                        <label htmlFor="address">Street Address *</label>
-                        <input
-                          type="text"
-                          id="address"
-                          name="address"
-                          value={formData.address}
-                          onChange={handleChange}
-                          placeholder="Enter your street address"
-                          required
-                        />
-                      </div>
-
-                      <div className="form-group">
-                        <label htmlFor="postalCode">Postal Code (Optional)</label>
-                        <input
-                          type="text"
-                          id="postalCode"
-                          name="postalCode"
-                          value={formData.postalCode}
-                          onChange={handleChange}
-                          placeholder="Enter postal code"
-                        />
-                      </div>
-                    </fieldset>
-
-                    <fieldset>
-                      <legend>Order Details</legend>
-
-                      <div className="form-group">
-                        <label htmlFor="quantity">Number of Books *</label>
-                        <input
-                          type="number"
-                          id="quantity"
-                          name="quantity"
-                          value={formData.quantity}
-                          onChange={handleChange}
-                          min="1"
-                          max="50"
-                          required
-                        />
-                      </div>
-
-                      <div className="form-group">
-                        <label htmlFor="notes">Special Instructions (Optional)</label>
-                        <textarea
-                          id="notes"
-                          name="notes"
-                          value={formData.notes}
-                          onChange={handleChange}
-                          placeholder="Any special delivery instructions?"
-                          rows="3"
-                        ></textarea>
-                      </div>
-                    </fieldset>
-
-                    {error && <div className="alert alert-error">{error}</div>}
-                    {message && <div className="alert alert-success">{message}</div>}
-
-                    <button type="submit" className="btn btn-primary btn-submit" disabled={loading}>
-                      {loading ? 'Processing Order...' : 'Place Order - FREE'}
-                    </button>
-                  </form>
-
-                  <div className="order-info">
-                    <h3>Why This Book is Free</h3>
-                    <p>We believe the Word of God should be accessible to everyone. That's why we offer this comprehensive Christian book completely free—no hidden charges, no payment required.</p>
-                    <h3>What to Expect</h3>
-                    <ul>
-                      <li><i className="fas fa-check"></i> Confirmation email sent immediately</li>
-                      <li><i className="fas fa-check"></i> Processing within 2-3 business days</li>
-                      <li><i className="fas fa-check"></i> Tracking information provided</li>
-                      <li><i className="fas fa-check"></i> Delivery within Kenya</li>
-                      <li><i className="fas fa-check"></i> Free shipping</li>
-                    </ul>
-                  </div>
-                </>
-              )}
-            </div>
+        <div className="order-layout-premium">
+          {/* Header Section */}
+          <div className="order-intro-premium">
+            <span className="premium-tag">Gift of Grace</span>
+            <h1>Divine <span className="highlight">Literature</span></h1>
+            <p>Request your free physical copy of the Word of God book. No hidden costs, no payment required—simply the truth delivered to you.</p>
           </div>
 
-          <div className="order-sidebar">
-            <div className="book-preview">
-              <div className="book-cover-preview">
-                <div className="book-cover-content">
-                  <h3>Free Christian Book</h3>
-                  <p>Sermons & Biblical Insights</p>
-                  <div className="book-badge">FREE</div>
+          <div className="order-grid-premium">
+            {/* Form Side */}
+            <div className="order-form-container-premium">
+              {orderSuccess ? (
+                <div className="order-success-premium">
+                  <div className="success-lottie">
+                    <i className="fas fa-check-circle"></i>
+                  </div>
+                  <h2>Order Confirmed</h2>
+                  <p>Your request has been received. A confirmation email has been sent to <strong>{user.email}</strong>.</p>
+                  <div className="order-summary-mini">
+                    <div className="summary-row">
+                      <span>Recipient:</span>
+                      <span>{formData.fullName}</span>
+                    </div>
+                    <div className="summary-row">
+                      <span>Location:</span>
+                      <span>{formData.town}, {formData.county}</span>
+                    </div>
+                  </div>
+                  <p className="redirect-hint">Redirecting to your order history...</p>
                 </div>
-              </div>
-              <h4>What's Inside:</h4>
-              <ul className="book-contents">
-                <li>Who is Jesus Christ?</li>
-                <li>Why Jesus Was Baptized</li>
-                <li>Why Jesus Was Born</li>
-                <li>The Truth That Sets You Free</li>
-                <li>Deep Biblical Analysis</li>
-                <li>Scripture References</li>
-                <li>Spiritual Guidance</li>
-              </ul>
+              ) : (
+                <form onSubmit={handleSubmit} className="glass-form-premium">
+                  <div className="form-section-premium">
+                    <h3 className="section-title-premium"><i className="fas fa-user"></i> Personal Details</h3>
+                    <div className="form-row-premium">
+                      <div className="form-group-premium">
+                        <label>Full Name *</label>
+                        <input
+                          type="text"
+                          name="fullName"
+                          value={formData.fullName}
+                          onChange={handleChange}
+                          placeholder="Your legal name"
+                          required
+                        />
+                      </div>
+                      <div className="form-group-premium">
+                        <label>Phone Number *</label>
+                        <input
+                          type="tel"
+                          name="phone"
+                          value={formData.phone}
+                          onChange={handleChange}
+                          placeholder="07XX XXX XXX"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="form-section-premium">
+                    <h3 className="section-title-premium"><i className="fas fa-map-marker-alt"></i> Shipping Address</h3>
+                    <div className="form-row-premium">
+                      <div className="form-group-premium">
+                        <label>County *</label>
+                        <select
+                          name="county"
+                          value={formData.county}
+                          onChange={handleChange}
+                          required
+                        >
+                          <option value="">Select County</option>
+                          {counties.map((c) => (
+                            <option key={c} value={c}>{c}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="form-group-premium">
+                        <label>Town/City *</label>
+                        <input
+                          type="text"
+                          name="town"
+                          value={formData.town}
+                          onChange={handleChange}
+                          placeholder="e.g. Nairobi CBD"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div className="form-group-premium">
+                      <label>Specific Address/Street *</label>
+                      <input
+                        type="text"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleChange}
+                        placeholder="Building, House No, or Landmarks"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-section-premium">
+                    <h3 className="section-title-premium"><i className="fas fa-book"></i> Order Options</h3>
+                    <div className="form-group-premium">
+                      <label>Quantity (Max 50) *</label>
+                      <input
+                        type="number"
+                        name="quantity"
+                        value={formData.quantity}
+                        onChange={handleChange}
+                        min="1"
+                        max="50"
+                        required
+                      />
+                    </div>
+                    <div className="form-group-premium">
+                      <label>Special Notes (Optional)</label>
+                      <textarea
+                        name="notes"
+                        value={formData.notes}
+                        onChange={handleChange}
+                        placeholder="Any specific delivery instructions?"
+                        rows="3"
+                      ></textarea>
+                    </div>
+                  </div>
+
+                  {error && <div className="premium-alert error">{error}</div>}
+
+                  <button type="submit" className="btn btn-primary btn-premium-submit" disabled={loading}>
+                    {loading ? (
+                      <span className="loading-spinner"><i className="fas fa-spinner fa-spin"></i> Processing...</span>
+                    ) : (
+                      <>Place Free Order <i className="fas fa-arrow-right"></i></>
+                    )}
+                  </button>
+                </form>
+              )}
             </div>
 
-            <div className="order-summary">
-              <h4>Order Summary</h4>
-              <div className="summary-item">
-                <span>Books:</span>
-                <span className="summary-value">{formData.quantity}</span>
+            {/* Sidebar Side */}
+            <div className="order-info-sidebar-premium">
+              <div className="book-card-premium glass-card">
+                <div className="book-visual-premium">
+                  <div className="book-3d-minimal">
+                    <img src="https://bjnewlife.org/upload/book/HAVEYOUTRULYBEENBORNAGAINOFWATERANDTHESPIRIT2024L.jpg?ver=1709079147" alt="Book Cover" />
+                  </div>
+                  <div className="free-badge-premium">FREE</div>
+                </div>
+                <div className="book-specs-premium">
+                  <h4>The Truth That Sets Free</h4>
+                  <ul className="specs-list">
+                    <li><i className="fas fa-check"></i> Complete Gospel of Water & Spirit</li>
+                    <li><i className="fas fa-check"></i> High Quality Print</li>
+                    <li><i className="fas fa-check"></i> Free Door-to-Door Delivery</li>
+                  </ul>
+                </div>
               </div>
-              <div className="summary-item">
-                <span>Price per Book:</span>
-                <span className="summary-value">FREE</span>
-              </div>
-              <div className="summary-item">
-                <span>Shipping:</span>
-                <span className="summary-value">FREE</span>
-              </div>
-              <div className="summary-divider"></div>
-              <div className="summary-total">
-                <span>Total:</span>
-                <span className="summary-value">FREE</span>
+
+              <div className="order-summary-card glass-card">
+                <h3>Order Summary</h3>
+                <div className="summary-content">
+                  <div className="summary-item-premium">
+                    <span>Subtotal</span>
+                    <span className="value-free">KSH 0.00</span>
+                  </div>
+                  <div className="summary-item-premium">
+                    <span>Shipping Fee</span>
+                    <span className="value-free">KSH 0.00</span>
+                  </div>
+                  <div className="summary-divider-premium"></div>
+                  <div className="summary-total-premium">
+                    <span>Total Cost</span>
+                    <span className="total-free">FREE</span>
+                  </div>
+                </div>
+                <div className="trust-badges-premium">
+                  <div className="badge-item">
+                    <i className="fas fa-shield-halved"></i>
+                    <span>Secure</span>
+                  </div>
+                  <div className="badge-item">
+                    <i className="fas fa-truck-fast"></i>
+                    <span>Fast Delivery</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

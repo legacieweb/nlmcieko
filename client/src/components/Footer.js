@@ -27,7 +27,6 @@ function Footer() {
             <h3>Explore</h3>
             <ul>
               <li><Link to="/">Home</Link></li>
-              <li><Link to="/portfolio">Portfolio</Link></li>
               <li><Link to="/music">Music</Link></li>
               <li><Link to="/about">About Us</Link></li>
             </ul>
@@ -55,7 +54,7 @@ function Footer() {
         </div>
 
         <div className="footer-bottom">
-          <p>&copy; {new Date().getFullYear()} nlm cieko. All rights reserved. Preaching Jesus as God.</p>
+          <p>&copy; {new Date().getFullYear()} nlm cieko. Preaching the Gospel of the water and the Spirit.</p>
           <div className="footer-legal">
             <Link to="/privacy-policy">Privacy Policy</Link>
             <Link to="/terms-of-service">Terms of Service</Link>

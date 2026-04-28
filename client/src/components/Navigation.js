@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useMusic } from '../context/MusicContext';
 import './Navigation.css';
 
-function Navigation({ onHamburgerClick, isServantPage }) {
+function Navigation({ onHamburgerClick, isServantPage, isAdminPage }) {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { user, logout } = useAuth();
@@ -72,10 +72,23 @@ function Navigation({ onHamburgerClick, isServantPage }) {
                 <li className="mobile-divider"></li>
                 <li><Link to="/" onClick={() => setIsOpen(false)}>Main Site</Link></li>
               </>
+            ) : isAdminPage ? (
+              <>
+                <li className="mobile-only-header">Admin Menu</li>
+                <li><Link to="/admin/analytics" onClick={() => setIsOpen(false)}>Analytics</Link></li>
+                <li><Link to="/admin/orders" onClick={() => setIsOpen(false)}>Orders</Link></li>
+                <li><Link to="/admin/beliefs" onClick={() => setIsOpen(false)}>Belief Data</Link></li>
+                <li><Link to="/admin/contacts" onClick={() => setIsOpen(false)}>Inquiries</Link></li>
+                <li><Link to="/admin/songs" onClick={() => setIsOpen(false)}>Songs</Link></li>
+                <li><Link to="/admin/users" onClick={() => setIsOpen(false)}>Users</Link></li>
+                <li><Link to="/admin/servant-pages" onClick={() => setIsOpen(false)}>Servant Pages</Link></li>
+                <li className="mobile-divider"></li>
+                <li><Link to="/" onClick={() => setIsOpen(false)}>Main Site</Link></li>
+              </>
             ) : (
               <>
                 <li><Link to="/" onClick={() => setIsOpen(false)}>Home</Link></li>
-                <li><Link to="/portfolio" onClick={() => setIsOpen(false)}>Portfolio</Link></li>
+                <li><Link to="/music" onClick={() => setIsOpen(false)}>Music</Link></li>
                 <li><Link to="/about" onClick={() => setIsOpen(false)}>About</Link></li>
                 <li><Link to="/contact" onClick={() => setIsOpen(false)}>Contact</Link></li>
                 {user?.isServant && <li><button className="nav-share-btn" onClick={copyShareLink}>Share Link</button></li>}
@@ -84,7 +97,7 @@ function Navigation({ onHamburgerClick, isServantPage }) {
             
             {user ? (
               <>
-                {!isServantPage && (
+                {!isServantPage && !isAdminPage && (
                   <>
                     {user.isAdmin && <li><Link to="/admin" onClick={() => setIsOpen(false)}>Admin</Link></li>}
                     {user.isServant && <li><Link to="/servant" onClick={() => setIsOpen(false)}>Servant Dashboard</Link></li>}

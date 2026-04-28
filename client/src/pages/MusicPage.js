@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useMusic } from '../context/MusicContext';
+import { useAuth } from '../context/AuthContext';
 import { SERVER_URL } from '../services/api';
 import MusicPreloader from '../components/MusicPreloader';
 import './MusicPage.css';
@@ -17,6 +18,7 @@ const genres = [
 
 function MusicPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { 
     allSongs, 
     playingSong, 
@@ -108,6 +110,13 @@ function MusicPage() {
 
   const handleDownload = async (e, song) => {
     e.stopPropagation();
+
+    // Check if user is a servant or admin
+    if (!user || (!user.isServant && !user.isAdmin)) {
+      showToast('Downloads are only available for servants');
+      return;
+    }
+
     let audioUrl = song.audio_url;
     if (audioUrl && !audioUrl.startsWith('http')) {
       audioUrl = SERVER_URL+audioUrl;
@@ -297,8 +306,12 @@ function MusicPage() {
                 <button className="action-circle" onClick={(e) => handleShare(e, playingSong)} title="Share">
                   <span><i className="fas fa-link"></i></span>
                 </button>
-                <button className="action-circle accent" onClick={(e) => handleDownload(e, playingSong)} title="Download">
-                  <span><i className="fas fa-download"></i></span>
+                <button 
+                  className={`action-circle accent ${(!user?.isServant && !user?.isAdmin) ? 'locked' : ''}`} 
+                  onClick={(e) => handleDownload(e, playingSong)} 
+                  title="Download"
+                >
+                  <span>{(!user?.isServant && !user?.isAdmin) ? <i className="fas fa-lock"></i> : <i className="fas fa-download"></i>}</span>
                 </button>
               </div>
               <div className="volume-pod">

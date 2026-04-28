@@ -13,10 +13,8 @@ import SignupPage from './pages/SignupPage';
 import LoginPage from './pages/LoginPage';
 import OrderPage from './pages/OrderPage';
 import OrderHistoryPage from './pages/OrderHistoryPage';
-import PortfolioPage from './pages/PortfolioPage';
 import MusicPage from './pages/MusicPage';
 import MusicDetailPage from './pages/MusicDetailPage';
-import GalleryPage from './pages/GalleryPage';
 import AdminPage from './pages/AdminPage';
 import ServantPage from './pages/ServantPage';
 import ServantPublicView from './pages/ServantPublicView';
@@ -55,12 +53,14 @@ const AppContent = () => {
   const location = useLocation();
 
   const isServantDashboard = location.pathname.startsWith('/servant') && location.pathname !== '/servant-view';
+  const isAdminDashboard = location.pathname.startsWith('/admin');
 
   return (
     <>
       <ScrollToTop />
       <Navigation 
         isServantPage={isServantDashboard} 
+        isAdminPage={isAdminDashboard}
         onHamburgerClick={null} 
       />
       <MusicToast />
@@ -73,11 +73,10 @@ const AppContent = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/order" element={<OrderPage />} />
           <Route path="/order-history" element={<OrderHistoryPage />} />
-          <Route path="/portfolio" element={<PortfolioPage />} />
           <Route path="/music" element={<MusicPage />} />
           <Route path="/music/:id" element={<MusicDetailPage />} />
-          <Route path="/gallery/:type" element={<GalleryPage />} />
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/admin/:tab" element={<AdminPage />} />
           <Route path="/servant" element={<ServantPage />} />
           <Route path="/servant/:tab" element={<ServantPage />} />
           <Route path="/servant-view/:name" element={<ServantPublicView />} />

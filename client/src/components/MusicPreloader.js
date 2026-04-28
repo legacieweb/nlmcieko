@@ -4,19 +4,23 @@ import './MusicPreloader.css';
 const MusicPreloader = () => {
   return (
     <div className="music-preloader-container">
-      <div className="music-loader">
-        <div className="equalizer">
-          <span className="bar"></span>
-          <span className="bar"></span>
-          <span className="bar"></span>
-          <span className="bar"></span>
-          <span className="bar"></span>
+      <div className="preloader-visual">
+        <div className="loader-rings">
+          <div className="ring"></div>
+          <div className="ring"></div>
+          <div className="ring"></div>
         </div>
-        <div className="loader-content">
-          <div className="pulse-circle">
+        <div className="loader-center">
+          <div className="pulse-icon">
             <i className="fas fa-music"></i>
           </div>
-          <p className="loader-text">Preparing the Sound of Grace...</p>
+          <div className="glow-sphere"></div>
+        </div>
+      </div>
+      <div className="loader-brand">
+        <h2 className="brand-text">NLM CIEKO</h2>
+        <div className="progress-track">
+          <div className="progress-fill"></div>
         </div>
       </div>
     </div>

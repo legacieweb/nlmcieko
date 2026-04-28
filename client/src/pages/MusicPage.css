@@ -747,3 +747,15 @@
   .volume-pod, .extra-actions .action-circle:not(.accent) { display: none; }
   .main-controls { gap: 1rem; }
 }
+
+.action-circle.locked {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.action-circle.locked:hover {
+  transform: none !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+}

@@ -82,10 +82,37 @@ export const initPostgres = async () => {
         email TEXT NOT NULL,
         address TEXT NOT NULL,
         city TEXT NOT NULL,
+        county TEXT,
+        postal_code TEXT,
         phone TEXT NOT NULL,
+        quantity INTEGER DEFAULT 1,
+        notes TEXT,
         status TEXT DEFAULT 'pending',
+        tracking_number TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
+    `);
+
+    // Add missing columns to orders table if they don't exist
+    await query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='orders' AND column_name='county') THEN
+          ALTER TABLE orders ADD COLUMN county TEXT;
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='orders' AND column_name='postal_code') THEN
+          ALTER TABLE orders ADD COLUMN postal_code TEXT;
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='orders' AND column_name='quantity') THEN
+          ALTER TABLE orders ADD COLUMN quantity INTEGER DEFAULT 1;
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='orders' AND column_name='notes') THEN
+          ALTER TABLE orders ADD COLUMN notes TEXT;
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='orders' AND column_name='tracking_number') THEN
+          ALTER TABLE orders ADD COLUMN tracking_number TEXT;
+        END IF;
+      END $$;
     `);
 
     // Songs table - for admin uploaded music

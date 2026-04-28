@@ -25,7 +25,7 @@ function OrderHistoryPage() {
 
   const fetchOrders = async () => {
     try {
-      const response = await api.get('/orders');
+      const response = await api.get('/orders/user');
       setOrders(response.data);
     } catch (error) {
       console.error('Error fetching orders:', error);

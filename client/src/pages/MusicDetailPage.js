@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useMusic } from '../context/MusicContext';
+import { useAuth } from '../context/AuthContext';
 import api, { SERVER_URL } from '../services/api';
 import MusicPreloader from '../components/MusicPreloader';
 import './MusicDetailPage.css';
@@ -9,6 +10,7 @@ import './MusicDetailPage.css';
 function MusicDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const {
     playingSong,
     isPlaying,
@@ -202,6 +204,13 @@ function MusicDetailPage() {
 
   const handleDownload = async (e, song) => {
     e?.stopPropagation();
+    
+    // Check if user is a servant or admin
+    if (!user || (!user.isServant && !user.isAdmin)) {
+      showToast('Downloads are only available for servants');
+      return;
+    }
+
     let audioUrl = song.audio_url;
     if (audioUrl && !audioUrl.startsWith('http')) {
       audioUrl = `${SERVER_URL}${audioUrl}`;
@@ -316,8 +325,14 @@ function MusicDetailPage() {
                 <button className="d-action-btn" onClick={(e) => handleShare(e, song)}>
                   <span className="icon"><i className="fas fa-link"></i></span> Share
                 </button>
-                <button className="d-action-btn accent" onClick={(e) => handleDownload(e, song)}>
-                  <span className="icon"><i className="fas fa-download"></i></span> Download
+                <button 
+                  className={`d-action-btn accent ${(!user?.isServant && !user?.isAdmin) ? 'locked' : ''}`} 
+                  onClick={(e) => handleDownload(e, song)}
+                >
+                  <span className="icon">
+                    {(!user?.isServant && !user?.isAdmin) ? <i className="fas fa-lock"></i> : <i className="fas fa-download"></i>}
+                  </span> 
+                  Download
                 </button>
               </div>
 
@@ -351,8 +366,11 @@ function MusicDetailPage() {
             <button className="mini-btn-icon" onClick={(e) => handleShare(e, song)}>
               <span><i className="fas fa-link"></i></span>
             </button>
-            <button className="mini-btn-icon" onClick={(e) => handleDownload(e, song)}>
-              <span><i className="fas fa-download"></i></span>
+            <button 
+              className={`mini-btn-icon ${(!user?.isServant && !user?.isAdmin) ? 'locked' : ''}`} 
+              onClick={(e) => handleDownload(e, song)}
+            >
+              <span>{(!user?.isServant && !user?.isAdmin) ? <i className="fas fa-lock"></i> : <i className="fas fa-download"></i>}</span>
             </button>
             <button className="mini-btn main">
               {isPlaying ? 
@@ -403,8 +421,11 @@ function MusicDetailPage() {
               <button className="hero-action-btn" onClick={(e) => handleShare(e, song)}>
                 <i className="fas fa-link"></i> Share
               </button>
-              <button className="hero-action-btn accent" onClick={(e) => handleDownload(e, song)}>
-                <i className="fas fa-download"></i> Download
+              <button 
+                className={`hero-action-btn accent ${(!user?.isServant && !user?.isAdmin) ? 'locked' : ''}`} 
+                onClick={(e) => handleDownload(e, song)}
+              >
+                {(!user?.isServant && !user?.isAdmin) ? <i className="fas fa-lock"></i> : <i className="fas fa-download"></i>} Download
               </button>
             </div>
           </div>

@@ -274,6 +274,23 @@
   box-shadow: 0 0 20px var(--primary-glow);
 }
 
+.d-action-btn.locked,
+.hero-action-btn.locked,
+.mini-btn-icon.locked {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: var(--glass-border) !important;
+  box-shadow: none !important;
+}
+
+.d-action-btn.locked:hover,
+.hero-action-btn.locked:hover,
+.mini-btn-icon.locked:hover {
+  transform: none !important;
+  filter: none !important;
+}
+
 .ctrl-btn {
   background: none;
   border: none;
@@ -601,10 +618,36 @@
     transform: scale(0.95);
   }
   
-  .p-lyric-line { font-size: 1.8rem; text-align: center; }
+  .p-lyric-line { font-size: 1.5rem; text-align: center; padding: 0 10px; }
   .p-lyric-line-wrapper { transform-origin: center center; }
   
+  .mobile-hero-art {
+    width: 220px;
+    height: 220px;
+  }
+  
+  .mobile-edge-visualizer {
+    inset: -40px;
+  }
+
+  .mobile-hero-info h2 {
+    font-size: 1.5rem;
+  }
+
   .mobile-mini-player { display: flex; }
+}
+
+@media (max-width: 480px) {
+  .mobile-hero-art {
+    width: 180px;
+    height: 180px;
+  }
+  
+  .p-lyric-line { font-size: 1.3rem; }
+  
+  .mobile-hero-info h2 { font-size: 1.3rem; }
+  
+  .mini-player-text { max-width: 80px; }
 }
 
 .loading-screen {

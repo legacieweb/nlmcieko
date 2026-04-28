@@ -34,6 +34,7 @@ function PrivacyPolicy() {
               <ul style={{ marginBottom: '2rem', paddingLeft: '1.5rem' }}>
                 <li>Personal identifiers (such as name and email address) when you download resources or contact us.</li>
                 <li>Usage data (such as IP address and browser type) to improve our website experience.</li>
+                <li>Music interaction data (such as tracks played and downloads) to understand community preferences.</li>
                 <li>Spiritual reflection data (such as belief percentages) to provide tailored guidance.</li>
               </ul>
 

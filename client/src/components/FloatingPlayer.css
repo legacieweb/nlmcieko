@@ -127,3 +127,33 @@
     border-radius: 16px;
   }
 }
+
+@media (max-width: 480px) {
+  .mini-player-content {
+    padding: 10px;
+  }
+  
+  .mini-player-thumb {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .mini-player-title {
+    font-size: 0.8rem;
+  }
+  
+  .mini-player-artist {
+    font-size: 0.7rem;
+  }
+  
+  .mini-ctrl-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 0.9rem;
+  }
+  
+  .mini-ctrl-btn.main {
+    width: 32px;
+    height: 32px;
+  }
+}

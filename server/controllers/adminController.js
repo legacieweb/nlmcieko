@@ -271,11 +271,21 @@ export const getPublicServantPage = async (req, res) => {
       }
     }
     
-    if (!userResult || userResult.rows.length === 0) {
-      return res.status(404).json({ message: 'Servant not found' });
+    let user = userResult?.rows?.[0];
+    
+    // Fallback for previewing templates not yet assigned to a servant
+    if (!user) {
+      if (pageResult) {
+        user = {
+          id: 0,
+          full_name: 'Preview Servant',
+          email: 'preview@example.com',
+          music_genre_subscription: 'gospel'
+        };
+      } else {
+        return res.status(404).json({ message: 'Servant or Page not found' });
+      }
     }
-
-    const user = userResult.rows[0];
     
     // Fetch page if not already fetched
     if (!pageResult) {

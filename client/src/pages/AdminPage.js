@@ -293,6 +293,12 @@ function AdminPage() {
     );
   };
 
+  const handlePreview = (title) => {
+    if (!title) return;
+    const slug = title.replace(/\s+/g, '-').toLowerCase();
+    window.open(`/#/servant-view/${slug}`, '_blank');
+  };
+
   const genreColors = {
     gospel: '#6366f1',
     trap: '#ec4899',
@@ -487,93 +493,97 @@ function AdminPage() {
                         </button>
                       </header>
 
-                      {/* Add/Edit Form */}
+                      {/* Add/Edit Form Popup */}
                       {showAddForm && (
-                        <div className="song-form-container glass-card">
-                          <div className="form-header-premium">
-                             <h2><i className={`fas ${selectedSong ? 'fa-edit' : 'fa-plus-circle'}`}></i> {selectedSong ? 'Edit Masterpiece' : 'New Creation'}</h2>
-                             <button className="close-form-btn" onClick={cancelForm}><i className="fas fa-times"></i></button>
-                          </div>
-                          <form onSubmit={selectedSong ? handleUpdate : handleSubmit} className="premium-form">
-                            <div className="form-grid-premium">
-                              <div className="form-group-premium">
-                                <label><i className="fas fa-heading"></i> Title</label>
-                                <input 
-                                  type="text" 
-                                  value={formData.title}
-                                  onChange={(e) => setFormData({...formData, title: e.target.value})}
-                                  required
-                                  placeholder="What is the name of this melody?"
-                                />
-                              </div>
-                              <div className="form-group-premium">
-                                <label><i className="fas fa-user-tie"></i> Artist</label>
-                                <input 
-                                  type="text" 
-                                  value={formData.artist}
-                                  onChange={(e) => setFormData({...formData, artist: e.target.value})}
-                                  placeholder="Who is the vessel?"
-                                />
-                              </div>
-                              <div className="form-group-premium">
-                                <label><i className="fas fa-tags"></i> Genre</label>
-                                <select 
-                                  value={formData.genre}
-                                  onChange={(e) => setFormData({...formData, genre: e.target.value})}
-                                >
-                                  <option value="gospel">Gospel</option>
-                                  <option value="trap">Trap / HipHop</option>
-                                  <option value="reggae">Reggae / Rasta</option>
-                                  <option value="worship">Worship</option>
-                                </select>
-                              </div>
-                              <div className="form-group-premium">
-                                <label><i className="fas fa-file-audio"></i> Audio Source</label>
-                                <div className="file-upload-custom">
-                                   <input 
-                                     type="file" 
-                                     id="audio-upload"
-                                     accept=".mp3,.wav,.ogg,.m4a,.aac"
-                                     onChange={(e) => {
-                                       const file = e.target.files[0];
-                                       setSelectedFile(file);
-                                       if (file) setFormData({...formData, audioUrl: file.name});
-                                     }}
-                                   />
-                                   <label htmlFor="audio-upload" className="upload-btn">
-                                      <i className="fas fa-cloud-upload-alt"></i> {selectedFile ? selectedFile.name : (selectedSong ? 'Change Audio File' : 'Upload Audio')}
-                                   </label>
+                        <div className="admin-modal-overlay" onClick={(e) => {
+                          if (e.target === e.currentTarget) cancelForm();
+                        }}>
+                          <div className="song-form-container glass-card">
+                            <div className="form-header-premium">
+                               <h2><i className={`fas ${selectedSong ? 'fa-edit' : 'fa-plus-circle'}`}></i> {selectedSong ? 'Edit Masterpiece' : 'New Creation'}</h2>
+                               <button className="close-form-btn" onClick={cancelForm}><i className="fas fa-times"></i></button>
+                            </div>
+                            <form onSubmit={selectedSong ? handleUpdate : handleSubmit} className="premium-form">
+                              <div className="form-grid-premium">
+                                <div className="form-group-premium">
+                                  <label><i className="fas fa-heading"></i> Title</label>
+                                  <input 
+                                    type="text" 
+                                    value={formData.title}
+                                    onChange={(e) => setFormData({...formData, title: e.target.value})}
+                                    required
+                                    placeholder="What is the name of this melody?"
+                                  />
+                                </div>
+                                <div className="form-group-premium">
+                                  <label><i className="fas fa-user-tie"></i> Artist</label>
+                                  <input 
+                                    type="text" 
+                                    value={formData.artist}
+                                    onChange={(e) => setFormData({...formData, artist: e.target.value})}
+                                    placeholder="Who is the vessel?"
+                                  />
+                                </div>
+                                <div className="form-group-premium">
+                                  <label><i className="fas fa-tags"></i> Genre</label>
+                                  <select 
+                                    value={formData.genre}
+                                    onChange={(e) => setFormData({...formData, genre: e.target.value})}
+                                  >
+                                    <option value="gospel">Gospel</option>
+                                    <option value="trap">Trap / HipHop</option>
+                                    <option value="reggae">Reggae / Rasta</option>
+                                    <option value="worship">Worship</option>
+                                  </select>
+                                </div>
+                                <div className="form-group-premium">
+                                  <label><i className="fas fa-file-audio"></i> Audio Source</label>
+                                  <div className="file-upload-custom">
+                                     <input 
+                                       type="file" 
+                                       id="audio-upload"
+                                       accept=".mp3,.wav,.ogg,.m4a,.aac"
+                                       onChange={(e) => {
+                                         const file = e.target.files[0];
+                                         setSelectedFile(file);
+                                         if (file) setFormData({...formData, audioUrl: file.name});
+                                       }}
+                                     />
+                                     <label htmlFor="audio-upload" className="upload-btn">
+                                        <i className="fas fa-cloud-upload-alt"></i> {selectedFile ? selectedFile.name : (selectedSong ? 'Change Audio File' : 'Upload Audio')}
+                                     </label>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                            
-                            <div className="form-group-premium full-width">
-                              <label><i className="fas fa-image"></i> Thumbnail URL</label>
-                              <input 
-                                type="text" 
-                                value={formData.thumbnailUrl}
-                                onChange={(e) => setFormData({...formData, thumbnailUrl: e.target.value})}
-                                placeholder="https://example.com/cover-art.jpg"
-                              />
-                            </div>
+                              
+                              <div className="form-group-premium full-width">
+                                <label><i className="fas fa-image"></i> Thumbnail URL</label>
+                                <input 
+                                  type="text" 
+                                  value={formData.thumbnailUrl}
+                                  onChange={(e) => setFormData({...formData, thumbnailUrl: e.target.value})}
+                                  placeholder="https://example.com/cover-art.jpg"
+                                />
+                              </div>
 
-                            <div className="form-group-premium full-width">
-                              <label><i className="fas fa-align-left"></i> Lyrics / Message</label>
-                              <textarea 
-                                value={formData.lyrics}
-                                onChange={(e) => setFormData({...formData, lyrics: e.target.value})}
-                                placeholder="Let the words flow here..."
-                                rows="6"
-                              ></textarea>
-                            </div>
+                              <div className="form-group-premium full-width">
+                                <label><i className="fas fa-align-left"></i> Lyrics / Message</label>
+                                <textarea 
+                                  value={formData.lyrics}
+                                  onChange={(e) => setFormData({...formData, lyrics: e.target.value})}
+                                  placeholder="Let the words flow here..."
+                                  rows="6"
+                                ></textarea>
+                              </div>
 
-                            <div className="form-actions-premium">
-                              <button type="button" className="btn-secondary-premium" onClick={cancelForm}>Dismiss</button>
-                              <button type="submit" className="btn-primary-premium" disabled={saving}>
-                                {saving ? <><i className="fas fa-spinner fa-spin"></i> Saving...</> : (selectedSong ? 'Update Melody' : 'Publish Song')}
-                              </button>
-                            </div>
-                          </form>
+                              <div className="form-actions-premium">
+                                <button type="button" className="btn-secondary-premium" onClick={cancelForm}>Dismiss</button>
+                                <button type="submit" className="btn-primary-premium" disabled={saving}>
+                                  {saving ? <><i className="fas fa-spinner fa-spin"></i> Saving...</> : (selectedSong ? 'Update Melody' : 'Publish Song')}
+                                </button>
+                              </div>
+                            </form>
+                          </div>
                         </div>
                       )}
 
@@ -843,6 +853,18 @@ function AdminPage() {
                                         <option key={p.id} value={p.id}>{p.title}</option>
                                       ))}
                                     </select>
+                                    {u.assigned_page_id && (
+                                      <button 
+                                        className="preview-mini-btn"
+                                        onClick={() => {
+                                          const page = servantPages.find(p => p.id === u.assigned_page_id);
+                                          if (page) handlePreview(page.title);
+                                        }}
+                                        title="Preview Page"
+                                      >
+                                        <i className="fas fa-external-link-alt"></i>
+                                      </button>
+                                    )}
                                   </div>
                                 </td>
                                 <td>
@@ -889,39 +911,43 @@ function AdminPage() {
                       </header>
 
                       {showPageForm && (
-                        <div className="song-form-container glass-card">
-                          <div className="form-header-premium">
-                             <h2><i className="fas fa-magic"></i> New Webpage Template</h2>
-                             <button className="close-form-btn" onClick={() => setShowPageForm(false)}><i className="fas fa-times"></i></button>
+                        <div className="admin-modal-overlay" onClick={(e) => {
+                          if (e.target === e.currentTarget) setShowPageForm(false);
+                        }}>
+                          <div className="song-form-container glass-card">
+                            <div className="form-header-premium">
+                               <h2><i className="fas fa-magic"></i> New Webpage Template</h2>
+                               <button className="close-form-btn" onClick={() => setShowPageForm(false)}><i className="fas fa-times"></i></button>
+                            </div>
+                            <form onSubmit={handlePageSubmit} className="premium-form">
+                              <div className="form-group-premium full-width">
+                                <label><i className="fas fa-pen-nib"></i> Template Title</label>
+                                <input 
+                                  type="text" 
+                                  value={pageFormData.title} 
+                                  onChange={(e) => setPageFormData({...pageFormData, title: e.target.value})}
+                                  required
+                                  placeholder="e.g. Youth Ministry Layout"
+                                />
+                              </div>
+                              <div className="form-group-premium full-width">
+                                <label><i className="fas fa-code"></i> Content Blueprint (HTML/Markdown)</label>
+                                <textarea 
+                                  value={pageFormData.content}
+                                  onChange={(e) => setPageFormData({...pageFormData, content: e.target.value})}
+                                  required
+                                  placeholder="Structure the spiritual message here..."
+                                  rows="12"
+                                ></textarea>
+                              </div>
+                              <div className="form-actions-premium">
+                                <button type="button" className="btn-secondary-premium" onClick={() => setShowPageForm(false)}>Discard</button>
+                                <button type="submit" className="btn-primary-premium" disabled={saving}>
+                                  {saving ? <><i className="fas fa-spinner fa-spin"></i> Creating...</> : 'Launch Template'}
+                                </button>
+                              </div>
+                            </form>
                           </div>
-                          <form onSubmit={handlePageSubmit} className="premium-form">
-                            <div className="form-group-premium full-width">
-                              <label><i className="fas fa-pen-nib"></i> Template Title</label>
-                              <input 
-                                type="text" 
-                                value={pageFormData.title} 
-                                onChange={(e) => setPageFormData({...pageFormData, title: e.target.value})}
-                                required
-                                placeholder="e.g. Youth Ministry Layout"
-                              />
-                            </div>
-                            <div className="form-group-premium full-width">
-                              <label><i className="fas fa-code"></i> Content Blueprint (HTML/Markdown)</label>
-                              <textarea 
-                                value={pageFormData.content}
-                                onChange={(e) => setPageFormData({...pageFormData, content: e.target.value})}
-                                required
-                                placeholder="Structure the spiritual message here..."
-                                rows="12"
-                              ></textarea>
-                            </div>
-                            <div className="form-actions-premium">
-                              <button type="button" className="btn-secondary-premium" onClick={() => setShowPageForm(false)}>Discard</button>
-                              <button type="submit" className="btn-primary-premium" disabled={saving}>
-                                {saving ? <><i className="fas fa-spinner fa-spin"></i> Creating...</> : 'Launch Template'}
-                              </button>
-                            </div>
-                          </form>
                         </div>
                       )}
 
@@ -937,7 +963,12 @@ function AdminPage() {
                                 <p><i className="fas fa-calendar-alt"></i> Created {new Date(p.created_at).toLocaleDateString()}</p>
                                 <div className="template-footer">
                                    <span className="usage-tag">System Template</span>
-                                   <button className="preview-link-btn">Preview <i className="fas fa-external-link-alt"></i></button>
+                                   <button 
+                                     className="preview-link-btn"
+                                     onClick={() => handlePreview(p.title)}
+                                   >
+                                     Preview <i className="fas fa-external-link-alt"></i>
+                                   </button>
                                 </div>
                              </div>
                           </div>
